@@ -20,6 +20,9 @@ dist/
 .vite/
 *.tsbuildinfo
 
+# ─── Claude Code lokale Tooling-Konfiguration (Preview-Server etc.) ───
+.claude/
+
 # ─── Betriebssystem / Editor ───
 .DS_Store
 Thumbs.db

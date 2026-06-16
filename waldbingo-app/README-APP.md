@@ -28,14 +28,17 @@ python3 -m http.server 8000
 - **Spielen:** Felder antippen = abhaken, ❓ = Info-Karte mit „Was ist das? / Woran erkenne
   ich es? / Wusstest du?" (offline aus der Datenbank). Bingo-Erkennung (Reihe/Spalte/Diagonale).
 - **Mehrspieler-Karten:** 1–10 Spieler, alle aus demselben Pool, je eigene Anordnung.
-- **Drucken/PDF:** „🖨️ Drucken" erzeugt alle Spielerkarten druckfertig (Browser-Druckdialog →
-  „Als PDF speichern"); „📄 Info-Begleitseite" druckt die Funde mit Kurzinfos (Offline-Infos auf Papier).
+- **Drucken/PDF:** „Drucken" erzeugt alle Spielerkarten druckfertig (Browser-Druckdialog →
+  „Als PDF speichern"); „Info-Begleitseite" druckt die Funde mit Kurzinfos (Offline-Infos auf Papier).
+- **Piktogramme:** Alle 55 Objekte haben ein einheitliches Vektor-Icon (SVG, `pictograms.js`) –
+  in App **und** Druck; das Emoji dient nur noch als Fallback, falls ein Icon fehlt.
 
 ## Dateien
 
 | Datei | Inhalt |
 |---|---|
 | `index.html` | Die komplette App (UI + Logik), eigenständig |
+| `pictograms.js` | Vektor-Piktogramme (SVG) für alle 55 Objekte + UI-Glyphen (App & Druck) |
 | `objects.json` | Kuratierte Objekt-Datenbank (55 Einträge) – die Datenquelle |
 | `objects.data.js` | Dieselben Daten als Embed für die App (offline) |
 | `build_data.py` | Generiert beide Dateien aus der gepflegten Liste + validiert die Tags |
@@ -51,5 +54,4 @@ neu. So bleibt die App-Datenquelle immer konsistent.
 ## Noch nicht im Prototyp (laut Konzept-Roadmap)
 
 Nutzerkonten, Freundesliste und „zusammen spielen" (Live-Spielstand) – das ist Phase 3/4
-und braucht das Supabase-Backend. Außerdem werden die Emoji-Piktogramme später durch die
-nach SVG portierten Vektor-Icons ersetzt (Feld `iconId` ist dafür schon vorbereitet).
+und braucht das Supabase-Backend.

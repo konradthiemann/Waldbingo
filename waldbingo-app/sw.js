@@ -2,11 +2,12 @@
    - App-Shell + Daten: cache-first (funktioniert komplett offline)
    - Wetter-API (open-meteo): network-first mit Fallback
 */
-const CACHE = 'waldbingo-v1';
+const CACHE = 'waldbingo-v2';
 const SHELL = [
   './',
   './index.html',
   './objects.data.js',
+  './pictograms.js',
   './manifest.webmanifest'
 ];
 
