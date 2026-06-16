@@ -3,6 +3,7 @@
 Ein Python-Skript, das druckfertige **Waldbingo-Karten** für Kinder als PDF erzeugt.  
 Vier zufällig angeordnete 5×5-Bingokarten passen auf eine DIN-A4-Seite – perfekt zum Ausdrucken und Mitnehmen auf den nächsten Waldspaziergang!
 
+[![CI](https://github.com/konradthiemann/Waldbingo/actions/workflows/ci.yml/badge.svg)](https://github.com/konradthiemann/Waldbingo/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)
 ![reportlab](https://img.shields.io/badge/PDF-reportlab-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
