@@ -1,0 +1,145 @@
+name: CI
+
+# Läuft bei Push und Pull Request auf main – sowie manuell per "Run workflow".
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Pro Branch/PR nur den neuesten Lauf behalten, ältere abbrechen.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Minimale Rechte: kein Job benötigt Schreibzugriff.
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  # ──────────────────────────────────────────────────────────────────
+  # Daten-Integrität: objects.json / objects.data.js müssen exakt aus
+  # build_data.py reproduzierbar sein ("eine Quelle der Wahrheit").
+  # build_data.py validiert dabei zusätzlich das Schema via assert.
+  # ──────────────────────────────────────────────────────────────────
+  daten:
+    name: Daten-Validierung & Sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Datenbank neu generieren (validiert Schema via assert)
+        run: python waldbingo-app/build_data.py
+
+      - name: Sync prüfen (eingecheckte Artefakte == Generator-Ausgabe)
+        run: |
+          if ! git diff --exit-code -- waldbingo-app/objects.json waldbingo-app/objects.data.js; then
+            echo "::error::objects.json / objects.data.js sind nicht synchron mit build_data.py."
+            echo "::error::Bitte 'python waldbingo-app/build_data.py' lokal ausführen und committen."
+            exit 1
+          fi
+
+  # ──────────────────────────────────────────────────────────────────
+  # Code-Qualität: ruff-Lint + Syntax-Check für alle Python-Dateien.
+  # ──────────────────────────────────────────────────────────────────
+  lint:
+    name: Python Lint & Syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: ruff installieren
+        run: pip install ruff
+
+      - name: ruff check
+        run: ruff check waldbingo.py icons.py waldbingo-app/build_data.py
+
+      - name: Syntax-Check (py_compile)
+        run: python -m py_compile waldbingo.py icons.py waldbingo-app/build_data.py
+
+  # ──────────────────────────────────────────────────────────────────
+  # PDF-Generator Smoke-Test: erzeugt eine echte Bingo-Karte und lädt
+  # sie als herunterladbares Artefakt hoch.
+  # ──────────────────────────────────────────────────────────────────
+  pdf:
+    name: PDF-Generator Smoke-Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Abhängigkeiten installieren
+        run: pip install -r requirements.txt
+
+      - name: PDF erzeugen (fester Seed → reproduzierbar)
+        run: python waldbingo.py -s 42 -o waldbingo-test.pdf
+
+      - name: PDF-Ausgabe prüfen (existiert & nicht leer)
+        run: |
+          test -s waldbingo-test.pdf
+          echo "PDF erzeugt: $(du -h waldbingo-test.pdf | cut -f1)"
+
+      - name: PDF als Artefakt hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: waldbingo-pdf
+          path: waldbingo-test.pdf
+          retention-days: 7
+
+  # ──────────────────────────────────────────────────────────────────
+  # Web-App-Build (dormant): aktiviert sich automatisch, sobald die
+  # geplante Vite/React-Migration (AP 1 in NAECHSTE-SCHRITTE.md) ein
+  # waldbingo-app/package.json hinzufügt. Ohne package.json wird der
+  # Build sauber übersprungen und der Job bleibt grün.
+  # ──────────────────────────────────────────────────────────────────
+  web:
+    name: Web-App Build (ab Vite/React-Migration)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auf package.json prüfen
+        id: detect
+        run: |
+          if [ -f waldbingo-app/package.json ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Noch kein waldbingo-app/package.json – Web-Build übersprungen (erwartet ab AP 1 der Migration)."
+          fi
+
+      - name: Node einrichten
+        if: steps.detect.outputs.present == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: waldbingo-app/package-lock.json
+
+      - name: Installieren, bauen, testen
+        if: steps.detect.outputs.present == 'true'
+        working-directory: waldbingo-app
+        run: |
+          npm ci
+          npm run build --if-present
+          npm test --if-present
