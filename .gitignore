@@ -1,0 +1,32 @@
+# ─── Python ───
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Virtuelle Umgebungen
+.venv/
+venv/
+env/
+
+# ─── Generierte PDF-Artefakte (werden per `python waldbingo.py` neu erzeugt) ───
+/waldbingo.pdf
+*-test.pdf
+
+# ─── Node / geplante Vite+React-Migration (AP 1, NAECHSTE-SCHRITTE.md) ───
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# ─── Betriebssystem / Editor ───
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Hinweis: objects.json und objects.data.js sind absichtlich versioniert.
+# Sie sind generierte, aber konsumierte Datenquellen; die CI prüft, dass sie
+# exakt mit build_data.py synchron bleiben (Job "Daten-Validierung & Sync").

@@ -1,0 +1,2036 @@
+{
+  "version": 1,
+  "count": 55,
+  "objekte": [
+    {
+      "id": "eichhoernchen",
+      "name": "Eichhörnchen",
+      "kategorie": "Tier",
+      "emoji": "🐿️",
+      "iconId": "eichhoernchen",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "park"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein flinkes Nagetier mit buschigem Schwanz, das in Bäumen klettert.",
+        "erkennen": "Rotbraunes oder schwarzes Fell, springt von Ast zu Ast.",
+        "wusstest_du": "Es vergräbt Nüsse als Vorrat – und vergisst manche, daraus wachsen neue Bäume!"
+      }
+    },
+    {
+      "id": "igel",
+      "name": "Igel",
+      "kategorie": "Tier",
+      "emoji": "🦔",
+      "iconId": "igel",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "abend",
+        "daemmerung",
+        "nacht"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "park",
+        "feldrand"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein kleines Tier mit Stacheln, das sich bei Gefahr einrollt.",
+        "erkennen": "Runde Stachelkugel, schnüffelt am Boden nach Würmern und Käfern.",
+        "wusstest_du": "Im Winter hält der Igel Winterschlaf und wacht erst im Frühling wieder auf."
+      }
+    },
+    {
+      "id": "reh",
+      "name": "Reh",
+      "kategorie": "Tier",
+      "emoji": "🦌",
+      "iconId": "reh",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "nebel"
+      ],
+      "tageszeit": [
+        "morgen",
+        "daemmerung",
+        "abend"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald",
+        "lichtung",
+        "feldrand"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein scheues Waldtier mit langen Beinen und großen Ohren.",
+        "erkennen": "Braunes Fell, weißer Fleck am Po, springt mit großen Sätzen davon.",
+        "wusstest_du": "Reh-Kitze haben weiße Punkte auf dem Fell – das ist ihre Tarnung im Laub."
+      }
+    },
+    {
+      "id": "fuchs",
+      "name": "Fuchs",
+      "kategorie": "Tier",
+      "emoji": "🦊",
+      "iconId": "fuchs",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt"
+      ],
+      "tageszeit": [
+        "daemmerung",
+        "abend",
+        "nacht"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "feldrand",
+        "lichtung"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 3,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein schlaues Raubtier mit rotem Fell und buschigem Schwanz.",
+        "erkennen": "Rotbraun, spitze Schnauze, weiße Schwanzspitze.",
+        "wusstest_du": "Der Fuchs kann Mäuse unter dem Schnee hören und springt dann gezielt hinein."
+      }
+    },
+    {
+      "id": "maus",
+      "name": "Maus",
+      "kategorie": "Tier",
+      "emoji": "🐭",
+      "iconId": "maus",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag",
+        "daemmerung"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "feldrand",
+        "lichtung"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 3,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein winziges Nagetier, das im Laub und Gras huscht.",
+        "erkennen": "Klein, graubraun, langer Schwanz, sehr schnell.",
+        "wusstest_du": "Eine Maus kann durch Spalten schlüpfen, die nur so groß wie ein Bleistift sind."
+      }
+    },
+    {
+      "id": "specht",
+      "name": "Specht",
+      "kategorie": "Vogel",
+      "emoji": "🐦",
+      "iconId": "specht",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein Vogel, der mit dem Schnabel an Baumstämme klopft.",
+        "erkennen": "Hört sich an wie schnelles Trommeln am Holz; oft rot am Kopf.",
+        "wusstest_du": "Der Specht klopft bis zu 20-mal pro Sekunde – und bekommt davon keine Kopfschmerzen!"
+      }
+    },
+    {
+      "id": "amsel",
+      "name": "Amsel",
+      "kategorie": "Vogel",
+      "emoji": "🐦‍⬛",
+      "iconId": "amsel",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag",
+        "abend"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "park",
+        "feldrand"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein schwarzer Singvogel mit schönem Gesang.",
+        "erkennen": "Männchen tiefschwarz mit gelbem Schnabel, Weibchen braun.",
+        "wusstest_du": "Amseln singen besonders früh am Morgen – manchmal schon vor Sonnenaufgang."
+      }
+    },
+    {
+      "id": "eule",
+      "name": "Eule",
+      "kategorie": "Vogel",
+      "emoji": "🦉",
+      "iconId": "eule",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "nebel"
+      ],
+      "tageszeit": [
+        "daemmerung",
+        "nacht"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 3,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein nachtaktiver Vogel mit großen runden Augen.",
+        "erkennen": "Sitzt still im Baum, ruft „Huhu“, fliegt fast lautlos.",
+        "wusstest_du": "Eulen können ihren Kopf fast ganz herumdrehen, um nach hinten zu schauen."
+      }
+    },
+    {
+      "id": "vogelnest",
+      "name": "Vogelnest",
+      "kategorie": "Vogel",
+      "emoji": "🪺",
+      "iconId": "vogelnest",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "park"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein gebautes Nest aus Zweigen und Gras in einem Baum oder Busch.",
+        "erkennen": "Rundes Gebilde aus Halmen und Ästchen, oft gut versteckt.",
+        "wusstest_du": "Im Winter sieht man leere Nester gut, weil keine Blätter mehr im Weg sind."
+      }
+    },
+    {
+      "id": "feder",
+      "name": "Feder",
+      "kategorie": "Vogel",
+      "emoji": "🪶",
+      "iconId": "feder",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "wind"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald",
+        "park",
+        "feldrand",
+        "lichtung"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Eine Vogelfeder, die auf den Boden gefallen ist.",
+        "erkennen": "Leicht, weich, oft am Boden oder im Gebüsch.",
+        "wusstest_du": "Federn sind hohl – deshalb können Vögel trotz Federkleid ganz leicht fliegen."
+      }
+    },
+    {
+      "id": "ameise",
+      "name": "Ameise",
+      "kategorie": "Insekt",
+      "emoji": "🐜",
+      "iconId": "ameise",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald",
+        "lichtung",
+        "feldrand"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein winziges, fleißiges Insekt, das in großen Völkern lebt.",
+        "erkennen": "Schwarz oder rot, läuft in langen Reihen über den Boden.",
+        "wusstest_du": "Eine Ameise kann das Vielfache ihres eigenen Gewichts tragen."
+      }
+    },
+    {
+      "id": "ameisenhaufen",
+      "name": "Ameisenhaufen",
+      "kategorie": "Spur",
+      "emoji": "🏔️",
+      "iconId": "ameisenhaufen",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "nadelwald",
+        "mischwald",
+        "lichtung"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein großer Hügel aus Nadeln und Erde – das Zuhause der Waldameisen.",
+        "erkennen": "Kegelförmiger Haufen, oft an einem Baumstumpf, voller Bewegung.",
+        "wusstest_du": "In einem großen Haufen können über eine Million Ameisen wohnen!"
+      }
+    },
+    {
+      "id": "biene",
+      "name": "Biene",
+      "kategorie": "Insekt",
+      "emoji": "🐝",
+      "iconId": "biene",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "lichtung",
+        "feldrand",
+        "park"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein Insekt, das von Blüte zu Blüte fliegt und Honig macht.",
+        "erkennen": "Gelb-schwarz gestreift, summt, sitzt auf Blüten.",
+        "wusstest_du": "Bienen tanzen, um anderen Bienen zu zeigen, wo es die besten Blüten gibt."
+      }
+    },
+    {
+      "id": "schmetterling",
+      "name": "Schmetterling",
+      "kategorie": "Insekt",
+      "emoji": "🦋",
+      "iconId": "schmetterling",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer"
+      ],
+      "wetter": [
+        "klar"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "lichtung",
+        "feldrand",
+        "park"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein bunter Falter mit großen Flügeln, der über Blumen flattert.",
+        "erkennen": "Zwei bunte Flügelpaare, flattert langsam von Blüte zu Blüte.",
+        "wusstest_du": "Manche Schmetterlinge schmecken mit ihren Füßen, ob eine Blüte lecker ist."
+      }
+    },
+    {
+      "id": "marienkaefer",
+      "name": "Marienkäfer",
+      "kategorie": "Insekt",
+      "emoji": "🐞",
+      "iconId": "marienkaefer",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "lichtung",
+        "feldrand",
+        "park",
+        "laubwald"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein kleiner roter Käfer mit schwarzen Punkten.",
+        "erkennen": "Halbrund, knallrot mit Punkten, krabbelt auf Blättern.",
+        "wusstest_du": "Die Punkte verraten nicht das Alter – verschiedene Arten haben verschieden viele."
+      }
+    },
+    {
+      "id": "kaefer",
+      "name": "Käfer",
+      "kategorie": "Insekt",
+      "emoji": "🪲",
+      "iconId": "kaefer",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald",
+        "lichtung",
+        "feldrand"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein Insekt mit harten Flügeldecken, das am Boden krabbelt.",
+        "erkennen": "Glänzender Panzer, sechs Beine, oft unter Steinen oder Holz.",
+        "wusstest_du": "Es gibt mehr Käferarten als jede andere Tiergruppe – mehrere Hunderttausend!"
+      }
+    },
+    {
+      "id": "spinnennetz",
+      "name": "Spinnennetz",
+      "kategorie": "Spur",
+      "emoji": "🕸️",
+      "iconId": "spinnennetz",
+      "jahreszeiten": [
+        "sommer",
+        "herbst"
+      ],
+      "wetter": [
+        "klar",
+        "nebel",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "lichtung",
+        "feldrand"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein feines, klebriges Netz, das eine Spinne gebaut hat.",
+        "erkennen": "Glitzert besonders im Morgentau oder Nebel zwischen Zweigen.",
+        "wusstest_du": "Spinnenseide ist für ihr Gewicht stärker als Stahl."
+      }
+    },
+    {
+      "id": "schnecke",
+      "name": "Schnecke",
+      "kategorie": "Tier",
+      "emoji": "🐌",
+      "iconId": "schnecke",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst"
+      ],
+      "wetter": [
+        "regen",
+        "nach_regen",
+        "bewoelkt",
+        "nebel"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "lichtung",
+        "feldrand",
+        "park"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein langsames Tier mit oder ohne Haus auf dem Rücken.",
+        "erkennen": "Schleimspur am Boden, zwei Fühler mit Augen an den Spitzen.",
+        "wusstest_du": "Schnecken haben tausende winzige Zähnchen auf ihrer Zunge."
+      }
+    },
+    {
+      "id": "regenwurm",
+      "name": "Regenwurm",
+      "kategorie": "Tier",
+      "emoji": "🪱",
+      "iconId": "regenwurm",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "regen",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "feldrand",
+        "park",
+        "lichtung"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein langer, weicher Wurm, der in der Erde lebt.",
+        "erkennen": "Rosa-braun, ringelig, kommt bei Regen an die Oberfläche.",
+        "wusstest_du": "Regenwürmer lockern den Boden und sind echte Helfer für die Pflanzen."
+      }
+    },
+    {
+      "id": "glühwürmchen",
+      "name": "Glühwürmchen",
+      "kategorie": "Insekt",
+      "emoji": "✨",
+      "iconId": "glühwürmchen",
+      "jahreszeiten": [
+        "sommer"
+      ],
+      "wetter": [
+        "klar"
+      ],
+      "tageszeit": [
+        "daemmerung",
+        "nacht"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "lichtung",
+        "feldrand"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 3,
+      "gewicht": 0.8,
+      "info": {
+        "kurz": "Ein Käfer, der im Dunkeln leuchtet.",
+        "erkennen": "Kleine grünliche Lichtpunkte, die in lauen Sommernächten schweben.",
+        "wusstest_du": "Das Leuchten ist „kaltes Licht“ – es entsteht ganz ohne Wärme."
+      }
+    },
+    {
+      "id": "eichel",
+      "name": "Eichel",
+      "kategorie": "Pflanze",
+      "emoji": "🌰",
+      "iconId": "eichel",
+      "jahreszeiten": [
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "park"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Die Frucht der Eiche mit einem kleinen Hütchen.",
+        "erkennen": "Braune, glatte Nuss in einem Becher-Hütchen.",
+        "wusstest_du": "Aus einer einzigen Eichel kann ein riesiger Baum von 40 Metern werden."
+      }
+    },
+    {
+      "id": "kastanie",
+      "name": "Kastanie",
+      "kategorie": "Pflanze",
+      "emoji": "🌰",
+      "iconId": "kastanie",
+      "jahreszeiten": [
+        "herbst"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "park"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Eine glänzend braune Frucht aus einer stacheligen Schale.",
+        "erkennen": "Glatt und braun, fällt aus grünen Stachelkugeln auf den Boden.",
+        "wusstest_du": "Mit Kastanien und Streichhölzern kann man tolle Tierfiguren basteln."
+      }
+    },
+    {
+      "id": "tannenzapfen",
+      "name": "Tannenzapfen",
+      "kategorie": "Pflanze",
+      "emoji": "🌲",
+      "iconId": "tannenzapfen",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "schnee",
+        "frost"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "nadelwald",
+        "mischwald"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Der holzige Zapfen einer Nadelbaum-Art.",
+        "erkennen": "Braun, schuppig, liegt unter Tannen und Fichten.",
+        "wusstest_du": "Zapfen öffnen ihre Schuppen bei trockenem Wetter und schließen sie bei Nässe."
+      }
+    },
+    {
+      "id": "blatt",
+      "name": "Blatt",
+      "kategorie": "Pflanze",
+      "emoji": "🍃",
+      "iconId": "blatt",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "wind"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "park",
+        "feldrand"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein Blatt von einem Baum oder Strauch.",
+        "erkennen": "Grün im Sommer, bunt im Herbst – jede Baumart hat eine andere Form.",
+        "wusstest_du": "Blätter sind wie kleine Küchen: Sie kochen mit Sonnenlicht das Essen für den Baum."
+      }
+    },
+    {
+      "id": "buntes_blatt",
+      "name": "Buntes Herbstblatt",
+      "kategorie": "Pflanze",
+      "emoji": "🍂",
+      "iconId": "buntes_blatt",
+      "jahreszeiten": [
+        "herbst"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "wind",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "park",
+        "feldrand"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.2,
+      "info": {
+        "kurz": "Ein rot, gelb oder orange gefärbtes Blatt im Herbst.",
+        "erkennen": "Leuchtende Farben, oft schon am Boden.",
+        "wusstest_du": "Die bunten Farben waren schon immer im Blatt – das Grün verschwindet nur im Herbst."
+      }
+    },
+    {
+      "id": "blume",
+      "name": "Blume",
+      "kategorie": "Pflanze",
+      "emoji": "🌼",
+      "iconId": "blume",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "lichtung",
+        "feldrand",
+        "park"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Eine blühende Pflanze mit bunten Blütenblättern.",
+        "erkennen": "Farbige Blüte auf einem Stängel, oft am Wegrand.",
+        "wusstest_du": "Viele Blumen schließen abends ihre Blüten und öffnen sie morgens wieder."
+      }
+    },
+    {
+      "id": "loewenzahn",
+      "name": "Löwenzahn",
+      "kategorie": "Pflanze",
+      "emoji": "🌻",
+      "iconId": "loewenzahn",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "lichtung",
+        "feldrand",
+        "park"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.1,
+      "info": {
+        "kurz": "Eine gelbe Blume, die später zur Pusteblume wird.",
+        "erkennen": "Knallgelbe Blüte oder weiße Kugel aus Schirmchen.",
+        "wusstest_du": "Eine Pusteblume kann hunderte Samen mit dem Wind auf die Reise schicken."
+      }
+    },
+    {
+      "id": "farn",
+      "name": "Farn",
+      "kategorie": "Pflanze",
+      "emoji": "🌿",
+      "iconId": "farn",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst"
+      ],
+      "wetter": [
+        "bewoelkt",
+        "nach_regen",
+        "nebel",
+        "klar"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald",
+        "gewaesser"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Eine Pflanze mit fein gefiederten Blättern, ohne Blüten.",
+        "erkennen": "Grüne, gefiederte Wedel, oft im schattigen, feuchten Wald.",
+        "wusstest_du": "Farne gab es schon, als die Dinosaurier lebten – sie sind uralt."
+      }
+    },
+    {
+      "id": "klee",
+      "name": "Klee",
+      "kategorie": "Pflanze",
+      "emoji": "🍀",
+      "iconId": "klee",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "lichtung",
+        "feldrand",
+        "park"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Eine kleine Pflanze mit meist drei Blättchen.",
+        "erkennen": "Drei runde Blättchen an einem Stiel; selten vier.",
+        "wusstest_du": "Ein vierblättriges Kleeblatt zu finden gilt als großes Glück."
+      }
+    },
+    {
+      "id": "brennnessel",
+      "name": "Brennnessel",
+      "kategorie": "Pflanze",
+      "emoji": "🌱",
+      "iconId": "brennnessel",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "feldrand",
+        "lichtung",
+        "gewaesser"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Eine Pflanze, die brennt, wenn man sie anfasst – also Vorsicht!",
+        "erkennen": "Gezackte grüne Blätter mit feinen Brennhärchen.",
+        "wusstest_du": "Schmetterlingsraupen lieben Brennnesseln – ohne sie gäbe es weniger Falter."
+      }
+    },
+    {
+      "id": "moos",
+      "name": "Moos",
+      "kategorie": "Pflanze",
+      "emoji": "🟢",
+      "iconId": "moos",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "bewoelkt",
+        "nach_regen",
+        "nebel",
+        "regen",
+        "klar"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald",
+        "gewaesser"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein weicher, grüner Teppich auf Steinen und Baumstämmen.",
+        "erkennen": "Dichtes, samtiges Grün, fühlt sich weich und feucht an.",
+        "wusstest_du": "Moos hat keine Wurzeln – es saugt Wasser direkt über die Blättchen auf."
+      }
+    },
+    {
+      "id": "gras",
+      "name": "Gras",
+      "kategorie": "Pflanze",
+      "emoji": "🌾",
+      "iconId": "gras",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "wind"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "lichtung",
+        "feldrand",
+        "park"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Halme, die fast überall auf Wiesen und Lichtungen wachsen.",
+        "erkennen": "Lange grüne Halme, die im Wind schaukeln.",
+        "wusstest_du": "Manche Gräser wachsen schneller, wenn man sie abschneidet – clever!"
+      }
+    },
+    {
+      "id": "beeren",
+      "name": "Beeren",
+      "kategorie": "Pflanze",
+      "emoji": "🫐",
+      "iconId": "beeren",
+      "jahreszeiten": [
+        "sommer",
+        "herbst"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "lichtung",
+        "feldrand"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Kleine bunte Früchte an Sträuchern – nur anschauen, nicht essen!",
+        "erkennen": "Rote, blaue oder schwarze Kügelchen an Zweigen.",
+        "wusstest_du": "Viele Waldbeeren sind für uns giftig, aber für Vögel ein leckeres Festmahl."
+      }
+    },
+    {
+      "id": "baumrinde",
+      "name": "Baumrinde",
+      "kategorie": "Baum",
+      "emoji": "🪵",
+      "iconId": "baumrinde",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "frost",
+        "schnee",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald",
+        "park"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Die raue Außenhaut eines Baumstamms.",
+        "erkennen": "Rissige oder glatte Schicht außen am Stamm, je nach Baumart.",
+        "wusstest_du": "Die Rinde schützt den Baum wie eine Haut vor Kälte, Hitze und Tieren."
+      }
+    },
+    {
+      "id": "baumstumpf",
+      "name": "Baumstumpf",
+      "kategorie": "Baum",
+      "emoji": "🪵",
+      "iconId": "baumstumpf",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "nach_regen",
+        "schnee"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald",
+        "lichtung"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Der Rest eines gefällten oder umgestürzten Baumes.",
+        "erkennen": "Flacher Holzstrunk am Boden, oft mit Jahresringen.",
+        "wusstest_du": "An den Ringen im Holz kann man ablesen, wie alt der Baum geworden ist."
+      }
+    },
+    {
+      "id": "tannenzweig",
+      "name": "Tannenzweig",
+      "kategorie": "Baum",
+      "emoji": "🌲",
+      "iconId": "tannenzweig",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "schnee",
+        "frost"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "nadelwald",
+        "mischwald"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein Zweig mit Nadeln von einer Tanne oder Fichte.",
+        "erkennen": "Grüne Nadeln statt Blätter, riecht würzig nach Wald.",
+        "wusstest_du": "Nadelbäume bleiben grün, weil ihre Nadeln auch im Winter dranbleiben."
+      }
+    },
+    {
+      "id": "wurzel",
+      "name": "Wurzel",
+      "kategorie": "Baum",
+      "emoji": "🌳",
+      "iconId": "wurzel",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Eine Baumwurzel, die aus dem Boden ragt.",
+        "erkennen": "Holziger Strang, der über den Weg oder aus dem Hang wächst.",
+        "wusstest_du": "Die Wurzeln eines Baumes sind oft so breit wie seine ganze Krone."
+      }
+    },
+    {
+      "id": "totholz",
+      "name": "Morsches Holz",
+      "kategorie": "Baum",
+      "emoji": "🪵",
+      "iconId": "totholz",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "bewoelkt",
+        "nach_regen",
+        "nebel"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein altes, vermoderndes Stück Holz voller Leben.",
+        "erkennen": "Weiches, brüchiges Holz, oft mit Pilzen und Käfern.",
+        "wusstest_du": "Totholz ist gar nicht tot – darin wohnen unzählige Käfer, Pilze und Würmer."
+      }
+    },
+    {
+      "id": "pilz",
+      "name": "Pilz",
+      "kategorie": "Pilz",
+      "emoji": "🍄",
+      "iconId": "pilz",
+      "jahreszeiten": [
+        "sommer",
+        "herbst"
+      ],
+      "wetter": [
+        "nach_regen",
+        "bewoelkt",
+        "nebel",
+        "regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein Pilz mit Hut und Stiel – nur anschauen, nicht anfassen!",
+        "erkennen": "Schirmchen auf einem Stiel, oft nach Regen aus dem Boden.",
+        "wusstest_du": "Der größte Teil eines Pilzes lebt unsichtbar als Fäden im Boden."
+      }
+    },
+    {
+      "id": "fliegenpilz",
+      "name": "Fliegenpilz",
+      "kategorie": "Pilz",
+      "emoji": "🍄",
+      "iconId": "fliegenpilz",
+      "jahreszeiten": [
+        "herbst"
+      ],
+      "wetter": [
+        "nach_regen",
+        "bewoelkt",
+        "nebel"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 0.9,
+      "info": {
+        "kurz": "Ein roter Pilz mit weißen Punkten – giftig, nur anschauen!",
+        "erkennen": "Knallroter Hut mit weißen Tupfen.",
+        "wusstest_du": "Der Fliegenpilz ist berühmt aus Märchen, aber für uns giftig."
+      }
+    },
+    {
+      "id": "baumpilz",
+      "name": "Baumpilz",
+      "kategorie": "Pilz",
+      "emoji": "🍄‍🟫",
+      "iconId": "baumpilz",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "bewoelkt",
+        "nach_regen",
+        "nebel",
+        "klar"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein Pilz, der wie eine Konsole aus einem Baumstamm wächst.",
+        "erkennen": "Halbrunde, harte Scheibe seitlich am Stamm.",
+        "wusstest_du": "Manche Baumpilze werden viele Jahre alt und wachsen jedes Jahr ein Stück."
+      }
+    },
+    {
+      "id": "pfotenabdruck",
+      "name": "Tierspur",
+      "kategorie": "Spur",
+      "emoji": "🐾",
+      "iconId": "pfotenabdruck",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "nach_regen",
+        "schnee",
+        "frost"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald",
+        "feldrand",
+        "lichtung"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 3,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein Fußabdruck eines Tieres in Schlamm oder Schnee.",
+        "erkennen": "Abdrücke im weichen Boden – mal mit Krallen, mal mit Hufen.",
+        "wusstest_du": "An der Spur erkennen Förster, welches Tier hier vorbeigekommen ist."
+      }
+    },
+    {
+      "id": "federn_rupfung",
+      "name": "Federn am Boden",
+      "kategorie": "Spur",
+      "emoji": "🪶",
+      "iconId": "federn_rupfung",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "wind"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "feldrand",
+        "lichtung"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Mehrere Federn an einer Stelle – ein Zeichen, dass hier etwas war.",
+        "erkennen": "Eine kleine Ansammlung loser Federn am Boden.",
+        "wusstest_du": "Solche Stellen verraten, dass ein Greifvogel oder Fuchs auf Jagd war."
+      }
+    },
+    {
+      "id": "nussschale",
+      "name": "Angeknabberte Nuss",
+      "kategorie": "Spur",
+      "emoji": "🌰",
+      "iconId": "nussschale",
+      "jahreszeiten": [
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "park"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Eine Nuss- oder Zapfenschale, an der ein Tier geknabbert hat.",
+        "erkennen": "Aufgeknackte Schalen oder zernagte Zapfen am Boden.",
+        "wusstest_du": "An den Nagespuren erkennt man, ob ein Eichhörnchen oder eine Maus gefuttert hat."
+      }
+    },
+    {
+      "id": "schneckenhaus",
+      "name": "Leeres Schneckenhaus",
+      "kategorie": "Spur",
+      "emoji": "🐚",
+      "iconId": "schneckenhaus",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "feldrand",
+        "park"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Das leere Haus einer Schnecke.",
+        "erkennen": "Gewundenes, hohles Häuschen ohne Bewohner.",
+        "wusstest_du": "Das Häuschen wächst mit der Schnecke mit – sie trägt ihr Zuhause immer dabei."
+      }
+    },
+    {
+      "id": "steine",
+      "name": "Steine",
+      "kategorie": "Landschaft",
+      "emoji": "🪨",
+      "iconId": "steine",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "schnee",
+        "frost",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald",
+        "gewaesser",
+        "gebirge",
+        "lichtung"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein Stein oder eine Gruppe Steine am Wegrand.",
+        "erkennen": "Hart, grau oder bunt, mal glatt, mal kantig.",
+        "wusstest_du": "Unter Steinen verstecken sich oft Käfer, Asseln und kleine Tiere."
+      }
+    },
+    {
+      "id": "pfuetze",
+      "name": "Pfütze",
+      "kategorie": "Landschaft",
+      "emoji": "💧",
+      "iconId": "pfuetze",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "regen",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "feldrand",
+        "lichtung"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Eine Wasserlache auf dem Weg nach dem Regen.",
+        "erkennen": "Spiegelnde Wasserfläche in einer Senke am Boden.",
+        "wusstest_du": "In großen Waldpfützen kann man manchmal Frösche oder Mückenlarven entdecken."
+      }
+    },
+    {
+      "id": "bach",
+      "name": "Bach",
+      "kategorie": "Landschaft",
+      "emoji": "🏞️",
+      "iconId": "bach",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "nach_regen"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "gewaesser",
+        "laubwald",
+        "mischwald",
+        "gebirge"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein kleines, fließendes Gewässer im Wald.",
+        "erkennen": "Schmales, plätscherndes Wasser über Steine und Kies.",
+        "wusstest_du": "Das Plätschern entsteht, weil das Wasser über Steine springt und Luft mitnimmt."
+      }
+    },
+    {
+      "id": "bank",
+      "name": "Waldbank",
+      "kategorie": "Landschaft",
+      "emoji": "🪑",
+      "iconId": "bank",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "schnee",
+        "frost"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald",
+        "lichtung",
+        "park"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Eine Sitzbank zum Ausruhen am Wegrand.",
+        "erkennen": "Holzbank, oft an einem schönen Aussichtspunkt.",
+        "wusstest_du": "Viele Waldbänke wurden von Vereinen gespendet – schau mal nach einem Schildchen!"
+      }
+    },
+    {
+      "id": "aussichtsturm",
+      "name": "Aussichtsturm",
+      "kategorie": "Landschaft",
+      "emoji": "🗼",
+      "iconId": "aussichtsturm",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "lichtung",
+        "gebirge",
+        "mischwald"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 3,
+      "gewicht": 0.7,
+      "info": {
+        "kurz": "Ein hoher Turm, von dem man weit über den Wald schauen kann.",
+        "erkennen": "Hohes Holz- oder Stahlgerüst mit Treppe und Plattform.",
+        "wusstest_du": "Von oben sieht man, wie ein grüner Teppich – das sind die Baumkronen."
+      }
+    },
+    {
+      "id": "wegweiser",
+      "name": "Wegweiser",
+      "kategorie": "Landschaft",
+      "emoji": "🪧",
+      "iconId": "wegweiser",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "klar",
+        "bewoelkt",
+        "schnee",
+        "frost",
+        "nebel"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald",
+        "lichtung",
+        "gebirge"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Ein Schild, das die Richtung und Wege zeigt.",
+        "erkennen": "Holz- oder Metallschild mit Pfeilen und Ortsnamen.",
+        "wusstest_du": "Im Wald zeigen farbige Zeichen an Bäumen oft Wanderwege an."
+      }
+    },
+    {
+      "id": "eiszapfen",
+      "name": "Eiszapfen",
+      "kategorie": "Landschaft",
+      "emoji": "🧊",
+      "iconId": "eiszapfen",
+      "jahreszeiten": [
+        "winter"
+      ],
+      "wetter": [
+        "frost",
+        "schnee"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald",
+        "gebirge",
+        "gewaesser"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 0.9,
+      "info": {
+        "kurz": "Ein spitzer Zapfen aus Eis, der von etwas herabhängt.",
+        "erkennen": "Klares, spitzes Eis an Ästen, Felsen oder Dächern.",
+        "wusstest_du": "Eiszapfen wachsen Tropfen für Tropfen, wenn Schmelzwasser sofort wieder gefriert."
+      }
+    },
+    {
+      "id": "raureif",
+      "name": "Raureif",
+      "kategorie": "Landschaft",
+      "emoji": "❄️",
+      "iconId": "raureif",
+      "jahreszeiten": [
+        "winter",
+        "herbst"
+      ],
+      "wetter": [
+        "frost",
+        "nebel"
+      ],
+      "tageszeit": [
+        "morgen"
+      ],
+      "habitat": [
+        "laubwald",
+        "mischwald",
+        "feldrand",
+        "lichtung",
+        "gewaesser"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 2,
+      "gewicht": 0.9,
+      "info": {
+        "kurz": "Feine weiße Eiskristalle, die alles wie gezuckert aussehen lassen.",
+        "erkennen": "Weißer, glitzernder Belag auf Gräsern und Blättern am Morgen.",
+        "wusstest_du": "Raureif entsteht, wenn Nebeltröpfchen an kalten Pflanzen sofort gefrieren."
+      }
+    },
+    {
+      "id": "schneeflocke",
+      "name": "Schnee",
+      "kategorie": "Landschaft",
+      "emoji": "🌨️",
+      "iconId": "schneeflocke",
+      "jahreszeiten": [
+        "winter"
+      ],
+      "wetter": [
+        "schnee"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "laubwald",
+        "nadelwald",
+        "mischwald",
+        "lichtung",
+        "feldrand",
+        "gebirge"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Weiße Schneedecke oder fallende Flocken.",
+        "erkennen": "Weiß, kalt, bedeckt Boden und Zweige.",
+        "wusstest_du": "Jede Schneeflocke ist sechseckig – und keine gleicht genau der anderen."
+      }
+    },
+    {
+      "id": "wolke",
+      "name": "Wolken",
+      "kategorie": "Landschaft",
+      "emoji": "☁️",
+      "iconId": "wolke",
+      "jahreszeiten": [
+        "fruehling",
+        "sommer",
+        "herbst",
+        "winter"
+      ],
+      "wetter": [
+        "bewoelkt",
+        "wind",
+        "klar"
+      ],
+      "tageszeit": [
+        "morgen",
+        "tag"
+      ],
+      "habitat": [
+        "lichtung",
+        "feldrand",
+        "gebirge",
+        "gewaesser"
+      ],
+      "regionen": [
+        "DE-weit"
+      ],
+      "schwierigkeit": 1,
+      "gewicht": 1.0,
+      "info": {
+        "kurz": "Wolken am Himmel über den Baumkronen.",
+        "erkennen": "Weiße oder graue Gebilde am Himmel, die sich langsam bewegen.",
+        "wusstest_du": "Wolken bestehen aus winzigen Wassertröpfchen – zusammen wiegen sie viele Tonnen."
+      }
+    }
+  ]
+}
