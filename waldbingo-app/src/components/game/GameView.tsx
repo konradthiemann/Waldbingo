@@ -13,12 +13,15 @@ interface Props {
   game: GameState
   onExit: () => void
   onPrint: (withInfo: boolean) => void
+  onInvite: () => void
 }
 
-export function GameView({ game, onExit, onPrint }: Props) {
+export function GameView({ game, onExit, onPrint, onInvite }: Props) {
   const [found, setFound] = useState<Set<number>[]>(game.found)
   const [activePlayer, setActivePlayer] = useState(game.activePlayer)
   const [modalIdx, setModalIdx] = useState<number | null>(null)
+  // Geteiltes Spiel (über mehrere Geräte): Gerät ist auf einen Spieler fixiert.
+  const isShared = game.selfPlayer != null
 
   // Spielstand bei jeder Änderung offline persistieren.
   useEffect(() => {
@@ -75,7 +78,14 @@ export function GameView({ game, onExit, onPrint }: Props) {
         </span>
       </div>
 
-      <PlayerTabs count={game.cards.length} active={activePlayer} onSelect={setActivePlayer} />
+      {isShared ? (
+        <div className="no-print mb-4 inline-flex items-center gap-2 rounded-full bg-forest-100 px-4 py-2 text-[14px] font-bold text-forest-800">
+          <Glyph name="users" className="block h-[17px] w-[17px] text-forest-600" />
+          Du bist Spieler {activePlayer + 1} von {game.players}
+        </div>
+      ) : (
+        <PlayerTabs count={game.cards.length} active={activePlayer} onSelect={setActivePlayer} />
+      )}
 
       <div className="mx-auto grid max-w-[680px] grid-cols-5 gap-1 sm:gap-2">
         {card.map((o, idx) => (
@@ -98,6 +108,14 @@ export function GameView({ game, onExit, onPrint }: Props) {
       </div>
 
       <div className="no-print mt-5 flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={onInvite}
+          className="focus-ring inline-flex items-center gap-2.5 rounded bg-gradient-to-br from-forest-600 to-forest-700 px-5 py-3.5 font-bold text-white shadow-wb1 hover:from-forest-500 hover:to-forest-700"
+        >
+          <Glyph name="users" className="block h-[19px] w-[19px]" />
+          Mitspieler einladen
+        </button>
         <button
           type="button"
           onClick={() => onPrint(false)}

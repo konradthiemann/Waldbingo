@@ -33,6 +33,42 @@ python3 -m http.server 8000
 - **Piktogramme:** Alle 55 Objekte haben ein einheitliches Vektor-Icon (SVG, `pictograms.js`) –
   in App **und** Druck; das Emoji dient nur noch als Fallback, falls ein Icon fehlt.
 
+## Zusammen spielen (mehrere Geräte)
+
+Mehrere Leute können auf **mehreren Handys** dasselbe Bingo spielen – jeder mit
+**denselben Arten, aber eigener Kartenreihenfolge**. Es gibt **keinen Live-Sync**:
+Jeder hakt offline auf seinem Gerät ab (passt zum Wald ohne Empfang).
+
+**Ablauf:**
+1. Host erstellt ein Bingo (Spieleranzahl auf die Gruppengröße stellen).
+2. Im Spiel **„Mitspieler einladen"** öffnen. Es gibt zwei Wege:
+   - **Kurzer Code** (z. B. `K7P2QF`) – braucht den Server (siehe unten).
+   - **Link / QR-Code** – enthält das ganze Spiel selbst, funktioniert ohne Server.
+3. Gast tippt unter **„Einem Spiel beitreten"** den Code ein **oder** öffnet Link/scannt QR.
+4. Gast wählt **„Welcher Spieler bist du?"** → spielt als Spieler 2/3/… offline weiter.
+
+Die Kartenreihenfolge wird erst **beim Beitreten** aus Pool + Seed + Spielernummer
+berechnet (`cardsForGame` in `src/lib/generator.ts`) – deterministisch, daher auf
+jedem Gerät identisch.
+
+### Einladungs-Server
+
+`server/index.js` ist ein kleiner Express-Dienst, der **dieselbe App** (`dist/`) **und**
+eine Mini-API ausliefert (`POST /api/games` → Code, `GET /api/games/:code` → Spiel).
+Gespeichert wird dateibasiert (JSON, TTL 14 Tage) – keine native Abhängigkeit.
+
+```bash
+npm run build      # erzeugt dist/
+npm run start      # = node server/index.js (liefert dist/ + /api)
+# Dev: in einem Terminal `npm run server`, im anderen `npm run dev` (Proxy /api ist gesetzt)
+```
+
+Env-Variablen: `PORT` (Standard 8787), `DATA_DIR` (Speicherort der Spiele).
+
+> **Railway:** Für dauerhafte Codes über Redeploys/Neustarts ein **Volume** mounten und
+> `DATA_DIR` auf den Mount-Pfad setzen. Ohne Volume gehen gespeicherte Codes bei einem
+> Neustart verloren – der **Link/QR-Weg ist davon nicht betroffen** (kein Server-Speicher).
+
 ## Dateien
 
 | Datei | Inhalt |
@@ -53,5 +89,7 @@ neu. So bleibt die App-Datenquelle immer konsistent.
 
 ## Noch nicht im Prototyp (laut Konzept-Roadmap)
 
-Nutzerkonten, Freundesliste und „zusammen spielen" (Live-Spielstand) – das ist Phase 3/4
-und braucht das Supabase-Backend.
+Nutzerkonten, Freundesliste und **Live-Spielstand** (gegenseitiger Fortschritt in Echtzeit,
+„wer hat zuerst Bingo") – das ist Phase 3/4 und braucht ein dauerhaftes Backend.
+Das geräteübergreifende **Beitreten** (gleiche Karten, eigene Reihenfolge, ohne Live-Sync)
+ist seit der Mehrgeräte-Funktion umgesetzt (siehe „Zusammen spielen").

@@ -6,9 +6,10 @@
   "description": "Waldbingo – kontextadaptive Wald-Bingo-PWA (Vite + React + TS)",
   "scripts": {
     "dev": "vite",
+    "server": "node server/index.js",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "start": "serve -s dist -l ${PORT:-3000}",
+    "start": "node server/index.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc -b --noEmit"
@@ -18,14 +19,16 @@
   },
   "dependencies": {
     "dexie": "^4.0.10",
+    "express": "^4.21.2",
     "leaflet": "^1.9.4",
+    "qrcode": "^1.5.4",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "serve": "^14.2.6"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.14",
     "@types/node": "^22.10.2",
+    "@types/qrcode": "^1.5.5",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-basic-ssl": "^1.2.0",

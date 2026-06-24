@@ -18,6 +18,8 @@ export interface StoredGame {
   diff: number
   players: number
   createdAt: number
+  /** Eigene Spielernummer bei einem geteilten Spiel (siehe GameState). */
+  selfPlayer?: number
 }
 
 export interface SpeciesCacheEntry {

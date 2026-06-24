@@ -2,20 +2,36 @@ import { useEffect, useState } from 'react'
 import { Glyph } from './components/Svg'
 import { Dashboard } from './components/dashboard/Dashboard'
 import { GameView } from './components/game/GameView'
+import { JoinView } from './components/join/JoinView'
 import { LegalView, type LegalPage } from './components/legal/LegalView'
 import { PrintSheet } from './components/print/PrintSheet'
+import { ShareModal } from './components/share/ShareModal'
 import { useOnline } from './hooks/useOnline'
-import { clearGame, loadGame } from './lib/db'
-import { fromStored, type GameState } from './lib/game-state'
+import { clearGame, loadGame, saveGame } from './lib/db'
+import { fromStored, type GameState, toStored } from './lib/game-state'
+import { clearJoinFromUrl, parseJoinFromUrl, type SharedGame } from './lib/share'
+
+/** Beitritts-Kontext: entweder ein fertiges Spiel (Link) oder ein Code (Query). */
+interface JoinIntent {
+  shared?: SharedGame
+  code?: string
+}
 
 export default function App() {
   const online = useOnline()
   const [game, setGame] = useState<GameState | null>(null)
   const [printWithInfo, setPrintWithInfo] = useState<boolean | null>(null)
   const [legal, setLegal] = useState<LegalPage | null>(null)
+  const [join, setJoin] = useState<JoinIntent | null>(null)
+  const [showShare, setShowShare] = useState(false)
 
-  // Aktives Spiel beim Start wiederherstellen.
+  // Start: Einladung aus der URL hat Vorrang vor einem gespeicherten Spiel.
   useEffect(() => {
+    const intent = parseJoinFromUrl()
+    if (intent) {
+      setJoin(intent)
+      return
+    }
     void loadGame().then((g) => {
       if (g) setGame(fromStored(g))
     })
@@ -34,6 +50,19 @@ export default function App() {
   async function exitGame() {
     await clearGame()
     setGame(null)
+  }
+
+  /** Nach Spieler-Auswahl: geteiltes Spiel als aktives Spiel übernehmen. */
+  async function handleJoin(g: GameState) {
+    await saveGame(toStored(g))
+    setGame(g)
+    setJoin(null)
+    clearJoinFromUrl()
+  }
+
+  function cancelJoin() {
+    setJoin(null)
+    clearJoinFromUrl()
   }
 
   return (
@@ -66,15 +95,23 @@ export default function App() {
 
           {legal ? (
             <LegalView page={legal} onClose={() => setLegal(null)} onNavigate={setLegal} />
+          ) : join ? (
+            <JoinView
+              initialShared={join.shared}
+              initialCode={join.code}
+              onJoin={handleJoin}
+              onCancel={cancelJoin}
+            />
           ) : game ? (
             <GameView
               key={game.createdAt}
               game={game}
               onExit={exitGame}
               onPrint={(withInfo) => setPrintWithInfo(withInfo)}
+              onInvite={() => setShowShare(true)}
             />
           ) : (
-            <Dashboard online={online} onStart={setGame} />
+            <Dashboard online={online} onStart={setGame} onJoinClick={() => setJoin({})} />
           )}
 
           <footer className="mt-10 text-balance text-center text-[11px] leading-relaxed text-muted">
@@ -98,6 +135,10 @@ export default function App() {
           </footer>
         </main>
       </div>
+
+      {showShare && game && (
+        <ShareModal game={game} online={online} onClose={() => setShowShare(false)} />
+      )}
 
       {printWithInfo !== null && game && (
         <div className="print-only">

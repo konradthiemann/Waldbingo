@@ -216,11 +216,12 @@ function Datenschutz() {
       <P>
         Waldbingo ist ein privates, kostenloses Such-Spiel für den Wald, das als Web-App (PWA)
         bereitgestellt wird. Es gibt kein Nutzerkonto und keine Anmeldung. Deine Spielstände und
-        Einstellungen werden ausschließlich lokal auf deinem Gerät in deinem Browser gespeichert und
-        nicht an einen Server des Betreibers übertragen. Deine Daten werden nicht verkauft und nicht zu
-        Werbezwecken an Dritte weitergegeben. Personenbezogene Daten werden nur in dem Umfang
-        verarbeitet, der für den Betrieb der Anwendung und ihre Funktionen (Karte, Wetter, regionale
-        Arten) erforderlich ist.
+        Einstellungen werden grundsätzlich ausschließlich lokal auf deinem Gerät in deinem Browser
+        gespeichert. Nur wenn du die optionale Einladungsfunktion mit kurzem Code nutzt (siehe Ziffer
+        7), werden spielbezogene Daten – ohne Personenbezug – vorübergehend an den Server übertragen.
+        Deine Daten werden nicht verkauft und nicht zu Werbezwecken an Dritte weitergegeben.
+        Personenbezogene Daten werden nur in dem Umfang verarbeitet, der für den Betrieb der Anwendung
+        und ihre Funktionen (Karte, Wetter, regionale Arten, Einladungen) erforderlich ist.
       </P>
 
       <H2>3. Hosting und Auslieferung</H2>
@@ -229,7 +230,9 @@ function Datenschutz() {
         Region innerhalb der Europäischen Union (Europe West) gewählt, sodass die beim Betrieb
         anfallenden Daten innerhalb der EU verarbeitet werden. Beim Aufruf werden die Programmdateien der
         Anwendung von den Servern des Anbieters an deinen Browser ausgeliefert; eine zentrale Datenbank
-        mit deinen Spielinhalten wird dabei nicht geführt.
+        mit deinen Spielinhalten wird dabei nicht geführt. Eine Ausnahme bildet allein die optionale
+        Einladungsfunktion mit kurzem Code (siehe Ziffer 7), bei der ein geteiltes Spiel kurzzeitig auf
+        dem Server gespeichert wird.
       </P>
       <P>
         Railway verarbeitet die beim Aufruf anfallenden Daten – insbesondere Server-Logfiles – in meinem
@@ -274,7 +277,27 @@ function Datenschutz() {
         der Browserdaten entfernt werden. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.
       </P>
 
-      <H2>7. Standortdaten</H2>
+      <H2>7. Einladungen für das gemeinsame Spielen (Mehrspieler)</H2>
+      <P>
+        Du kannst ein erstelltes Spiel mit anderen teilen, damit mehrere Personen auf verschiedenen
+        Geräten dieselbe Bingo-Karte spielen. Dafür gibt es zwei Wege: (a) einen Einladungs-Link bzw.
+        QR-Code, der das Spiel vollständig enthält – dabei werden <b>keine</b> Daten an einen Server des
+        Betreibers übertragen; und (b) einen kurzen Einladungs-Code. Nutzt du den Code, werden die
+        Spieldaten an den Server der Anwendung (Railway, EU-Region, siehe Ziffer 3) übertragen und dort
+        vorübergehend gespeichert, damit Mitspieler sie über den Code abrufen können.
+      </P>
+      <P>
+        Übertragen bzw. gespeichert werden ausschließlich <b>spielbezogene Inhalte</b>: die Bingo-Felder
+        (Arten mit Bild- und Infoangaben) und der Spielkontext (Jahreszeit, Wetter, Tageszeit,
+        Lebensraum) sowie technische Spielparameter. Es werden <b>keine personenbezogenen Daten, kein
+        Name und keine genauen Standortkoordinaten</b> übertragen. Auch dein Spielfortschritt (abgehakte
+        Felder) wird nicht übertragen, sondern bleibt lokal auf deinem Gerät. Die auf dem Server
+        gespeicherten Spiele werden automatisch nach spätestens 14 Tagen gelöscht. Die Nutzung dieser
+        Funktion ist freiwillig; Rechtsgrundlage ist das berechtigte Interesse an der Bereitstellung der
+        Mehrspieler-Funktion (Art. 6 Abs. 1 lit. f DSGVO).
+      </P>
+
+      <H2>8. Standortdaten</H2>
       <P>
         Wenn du die Funktion „Mein Standort“ nutzt, fragt dein Browser deine Zustimmung zur Standortabfrage
         ab. Deine Koordinaten werden dann verarbeitet, um die Karte zu zentrieren, das Wetter sowie
@@ -285,7 +308,7 @@ function Datenschutz() {
         Anwendung bleibt nutzbar, indem du deinen Ort direkt auf der Karte antippst.
       </P>
 
-      <H2>8. Externe Dienste (Karte, Wetter, Arten)</H2>
+      <H2>9. Externe Dienste (Karte, Wetter, Arten)</H2>
       <P>
         Um Karte, Wetter und regionale Arten bereitzustellen, ruft die Anwendung – nur wenn du online
         bist – Inhalte von folgenden Drittanbietern direkt aus deinem Browser ab. Dabei wird technisch
@@ -309,7 +332,7 @@ function Datenschutz() {
         Offline-Modus erfolgt kein Abruf; bereits erstellte Spiele bleiben spielbar.
       </P>
 
-      <H2>9. Empfänger der Daten</H2>
+      <H2>10. Empfänger der Daten</H2>
       <P>
         Empfänger bzw. Kategorien von Empfängern personenbezogener Daten sind der Hosting-Anbieter
         (Railway) als Auftragsverarbeiter sowie die unter Ziffer 8 genannten Anbieter von Karten-, Wetter-
@@ -317,16 +340,18 @@ function Datenschutz() {
         ich bin gesetzlich dazu verpflichtet.
       </P>
 
-      <H2>10. Speicherdauer</H2>
+      <H2>11. Speicherdauer</H2>
       <P>
         Lokal gespeicherte Spieldaten verbleiben so lange auf deinem Gerät, bis du das Spiel verlässt, die
         Daten überschreibst oder die Speicherdaten deines Browsers löschst. Zwischengespeicherte Arten
-        werden automatisch nach kurzer Zeit verworfen (Zwischenspeicher mit begrenzter Gültigkeit).
-        Server-Logfiles werden nur für einen kurzen Zeitraum gespeichert und anschließend gelöscht.
-        Gesetzliche Aufbewahrungspflichten bleiben unberührt.
+        werden automatisch nach kurzer Zeit verworfen (Zwischenspeicher mit begrenzter Gültigkeit). Über
+        die Einladungsfunktion mit Code auf dem Server gespeicherte Spiele werden automatisch nach
+        spätestens 14 Tagen gelöscht (siehe Ziffer 7). Server-Logfiles werden nur für einen kurzen
+        Zeitraum gespeichert und anschließend gelöscht. Gesetzliche Aufbewahrungspflichten bleiben
+        unberührt.
       </P>
 
-      <H2>11. Deine Rechte</H2>
+      <H2>12. Deine Rechte</H2>
       <P>
         Du hast jederzeit das Recht auf Auskunft über die zu deiner Person gespeicherten Daten (Art. 15
         DSGVO), Berichtigung unrichtiger Daten (Art. 16 DSGVO), Löschung (Art. 17 DSGVO), Einschränkung
@@ -338,7 +363,7 @@ function Datenschutz() {
         oben genannte Kontaktadresse.
       </P>
 
-      <H2>12. Beschwerderecht bei der Aufsichtsbehörde</H2>
+      <H2>13. Beschwerderecht bei der Aufsichtsbehörde</H2>
       <P>
         Unbeschadet anderweitiger Rechtsbehelfe steht dir das Recht zu, dich bei einer
         Datenschutz-Aufsichtsbehörde zu beschweren (Art. 77 DSGVO). Die zuständige Aufsichtsbehörde ist:
@@ -367,7 +392,7 @@ function Datenschutz() {
         </a>
       </P>
 
-      <H2>13. SSL-/TLS-Verschlüsselung</H2>
+      <H2>14. SSL-/TLS-Verschlüsselung</H2>
       <P>
         Diese Anwendung nutzt aus Sicherheitsgründen eine SSL- bzw. TLS-Verschlüsselung. Eine
         verschlüsselte Verbindung erkennst du daran, dass die Adresszeile des Browsers mit „https://“
@@ -375,7 +400,7 @@ function Datenschutz() {
         von Dritten mitgelesen werden.
       </P>
 
-      <H2>14. Pflicht zur Bereitstellung</H2>
+      <H2>15. Pflicht zur Bereitstellung</H2>
       <P>
         Für die Nutzung von Waldbingo ist kein Nutzerkonto und keine Angabe personenbezogener Daten
         erforderlich. Die Freigabe deines Standorts ist freiwillig; ohne sie kannst du deinen Ort
