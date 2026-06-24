@@ -65,3 +65,36 @@ Situation (Ort, Jahreszeit, Wetter, Tageszeit) passen.
    Kategorie, damit keine Gruppe dominiert.
 4. **Anordnen:** Verteile die gezogenen Objekte ins 5×5-Raster (Seed = reproduzierbar).
    Mehrere Spieler bekommen denselben Pool in unterschiedlicher Anordnung.
+
+## Live-Arten (zur Laufzeit, ab v2)
+
+Bei mittlerem/schwerem Schwierigkeitsgrad mischt die App zusätzlich **regional und
+saisonal tatsächlich vorkommende Arten** aus der iNaturalist-API in den Pool
+(`species_counts` nach `lat,lng,radius` + `month` + `iconic_taxa`). Diese Arten werden
+**zur Laufzeit** ins selbe Objekt-Schema normalisiert (sie stehen *nicht* in
+`objects.json`) und tragen zusätzlich folgende optionale Felder:
+
+| Feld | Bedeutung |
+|---|---|
+| `_live` | `true` für live geholte Arten (sonst undefiniert) |
+| `_taxonId` | iNaturalist-Taxon-ID (für Medien-/Info-Auflösung) |
+| `_count` | Beobachtungs-Anzahl im Kontext → bestimmt `schwierigkeit` (Perzentil je Gruppe) |
+| `_media` | Darstellung: `{ kind, url?, attribution?, license?, source?, painted? }` |
+
+`id` folgt der Konvention `inat-<taxonId>`; `name` ist der **deutsche Trivialname**
+(`preferred_common_name`, `locale=de`) — Arten ohne deutschen Namen, mit `count < 5` oder
+mit Schutzstatus werden verworfen. `info.kurz` stammt aus der Wikipedia-Zusammenfassung,
+`info.erkennen`/`info.wusstest_du` aus generischen **Kategorie-Vorlagen**
+(`src/lib/info-templates.ts`) – alles **ohne KI**.
+
+### Visueller Schwierigkeits-Gradient (`_media.kind`)
+
+| Stufe | Darstellung | Quelle |
+|---|---|---|
+| `1` leicht | **Piktogramm** | kuratierte SVGs (`pictograms.js`) |
+| `2` mittel | **Illustration** ("gemalt") | Wikimedia-Commons (gemeinfrei) → sonst stilisiertes iNaturalist-Foto (`painted`) |
+| `3` schwer | **Foto** | iNaturalist `default_photo` (mit Attribution) |
+
+> **Eine Quelle der Wahrheit bleibt `objects.json`.** Live-Arten sind eine additive
+> Online-Veredelung; offline/ohne Standort fällt die App vollständig auf die kuratierte
+> Datenbank zurück (immer spielbar, immer 25 Felder).

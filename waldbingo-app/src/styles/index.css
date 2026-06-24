@@ -1,0 +1,215 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ring: 0 0 0 3px rgba(63, 157, 99, 0.45);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: #1d2a22;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+  background:
+    radial-gradient(120% 80% at 100% 0%, #f4f8f1 0%, rgba(244, 248, 241, 0) 55%),
+    radial-gradient(120% 80% at 0% 100%, #e3efe2 0%, rgba(227, 239, 226, 0) 55%),
+    #eaf1e8;
+}
+
+::selection {
+  background: #8ed3a0;
+}
+
+/* Inline-SVG-Piktogramme (aus pictograms) – füllen ihren sizierten Wrapper. */
+svg.pico,
+svg.ui-ic {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+/* ── Animationen ───────────────────────────────────────── */
+@keyframes wb-pop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes wb-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes wb-rise {
+  from {
+    transform: translateY(16px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.anim-pop {
+  animation: wb-pop 0.28s ease;
+}
+.anim-fade {
+  animation: wb-fade 0.2s ease;
+}
+.anim-rise {
+  animation: wb-rise 0.25s ease;
+}
+
+/* "Gemalt"-Look für Illustrations-Fallback (Foto → posterisiert).
+   Wird auf <img> mit data-style="painted" angewandt. */
+.media-painted {
+  filter: url(#wb-posterize) saturate(1.15) contrast(1.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ── Druck (Bingo-Karten + Info-Begleitseite) ───────────── */
+.print-only {
+  display: none;
+}
+@media print {
+  @page {
+    margin: 10mm;
+  }
+  body {
+    background: #fff;
+  }
+  .app-screen,
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-page {
+    page-break-after: always;
+  }
+  .print-page:last-child {
+    page-break-after: auto;
+  }
+
+  /* Bis zu 4 Bingos pro Seite (2×2); einzelne Karte nie umbrechen. */
+  .print-cards {
+    display: grid;
+    gap: 8mm;
+  }
+  .print-cards.cols-1 {
+    grid-template-columns: 1fr;
+    max-width: 150mm;
+    margin: 0 auto;
+  }
+  .print-cards.cols-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+  .print-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .print-card-title {
+    margin: 0;
+    font-size: 11pt;
+    font-weight: 800;
+    color: #14331f;
+  }
+  .print-card-ctx {
+    margin: 0.5mm 0 1.5mm;
+    font-size: 7pt;
+    color: #444;
+  }
+  .print-bingo {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1mm;
+  }
+  .print-cell {
+    display: flex;
+    flex-direction: column;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border: 0.3mm solid #b8cfbe;
+    border-radius: 1.5mm;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .print-cell-img {
+    display: grid;
+    flex: 1;
+    min-height: 0;
+    place-items: center;
+    padding: 0.6mm;
+  }
+  .print-cell-img img,
+  .print-cell-img svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .print-cell-name {
+    border-top: 0.3mm solid #eef3ec;
+    padding: 0.4mm 0.3mm;
+    font-size: 5.5pt;
+    font-weight: 700;
+    line-height: 1.05;
+    text-align: center;
+  }
+
+  /* Info-Begleitseite */
+  .print-info-row {
+    display: flex;
+    gap: 2.5mm;
+    align-items: flex-start;
+    margin-bottom: 2mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .print-info-img {
+    width: 9mm;
+    height: 9mm;
+    flex: none;
+  }
+  .print-info-img img,
+  .print-info-img svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .print-info-tx {
+    font-size: 9pt;
+    line-height: 1.25;
+  }
+  .print-info-tx b {
+    color: #1f5b38;
+  }
+}

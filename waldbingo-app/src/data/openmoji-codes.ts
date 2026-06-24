@@ -1,0 +1,3 @@
+// Auto-generiert (scripts/dl-openmoji). Vorhandene OpenMoji-Codes (color/svg).
+// Bildmaterial: OpenMoji – die Open-Source-Emoji-Bibliothek (https://openmoji.org), CC BY-SA 4.0.
+export const OPENMOJI_CODES: ReadonlySet<string> = new Set(["1F328","1F330","1F331","1F332","1F333","1F33B","1F33C","1F33E","1F33F","1F340","1F342","1F343","1F344","1F344-200D-1F7EB","1F3D4","1F3DE","1F40C","1F41A","1F41C","1F41D","1F41E","1F426","1F426-200D-2B1B","1F42D","1F43E","1F43F","1F4A7","1F578","1F5FC","1F7E2","1F989","1F98A","1F98B","1F98C","1F994","1F9CA","1FA91","1FAA7","1FAA8","1FAB1","1FAB2","1FAB5","1FAB6","1FABA","1FAD0","2601","2728","2744"])
