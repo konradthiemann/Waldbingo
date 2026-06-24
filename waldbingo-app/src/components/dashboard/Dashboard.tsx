@@ -28,9 +28,10 @@ import { WeatherTile } from './WeatherTile'
 interface Props {
   online: boolean
   onStart: (game: GameState) => void
+  onJoinClick: () => void
 }
 
-export function Dashboard({ online, onStart }: Props) {
+export function Dashboard({ online, onStart, onJoinClick }: Props) {
   const now = new Date()
   const [season, setSeason] = useState<Jahreszeit>(seasonFromDate(now))
   const [time, setTime] = useState<Tageszeit>(timeFromHour(now.getHours()))
@@ -268,6 +269,14 @@ export function Dashboard({ online, onStart }: Props) {
         >
           <Glyph name="dice" className="block h-5 w-5" />
           {creating ? 'Wird erstellt…' : 'Bingo erstellen'}
+        </button>
+        <button
+          type="button"
+          onClick={onJoinClick}
+          className="focus-ring mt-2.5 flex w-full items-center justify-center gap-2.5 rounded-lg border-[1.5px] border-forest-300 bg-white/90 px-6 py-3 text-[15px] font-bold text-forest-700 backdrop-blur transition hover:bg-forest-100"
+        >
+          <Glyph name="users" className="block h-[18px] w-[18px] text-forest-600" />
+          Einem Spiel beitreten
         </button>
       </div>
     </section>

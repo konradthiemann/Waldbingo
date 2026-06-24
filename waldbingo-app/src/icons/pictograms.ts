@@ -419,7 +419,26 @@ export const UI: Record<string, string> = {
       '<path d="M32 54V24" stroke="#6f4a2c" stroke-width="3" stroke-linecap="round"/>',
     sparkle:
       '<path d="M32 8l5 16 16 5-16 5-5 16-5-16-16-5 16-5z" fill="currentColor"/>' +
-      '<path d="M50 40l2 7 7 2-7 2-2 7-2-7-7-2 7-2z" fill="currentColor"/>'
+      '<path d="M50 40l2 7 7 2-7 2-2 7-2-7-7-2 7-2z" fill="currentColor"/>',
+    users:
+      '<circle cx="23" cy="24" r="9" fill="currentColor"/>' +
+      '<circle cx="44" cy="26" r="7" fill="currentColor" opacity="0.7"/>' +
+      '<path d="M8 52c0-9 7-15 15-15s15 6 15 15z" fill="currentColor"/>' +
+      '<path d="M40 52c0-7 3-12 8-13 5 1 8 6 8 13z" fill="currentColor" opacity="0.7"/>',
+    share:
+      '<circle cx="48" cy="16" r="7" fill="currentColor"/>' +
+      '<circle cx="16" cy="32" r="7" fill="currentColor"/>' +
+      '<circle cx="48" cy="48" r="7" fill="currentColor"/>' +
+      '<path d="M42 19L22 29M22 35l20 10" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>',
+    copy:
+      '<rect x="22" y="22" width="30" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="4.5"/>' +
+      '<path d="M14 42h-2a4 4 0 0 1-4-4V12a4 4 0 0 1 4-4h22a4 4 0 0 1 4 4v2" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/>',
+    close:
+      '<path d="M18 18l28 28M46 18L18 46" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>',
+    link:
+      '<path d="M26 38l12-12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>' +
+      '<path d="M30 18l4-4a11 11 0 0 1 16 16l-4 4" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>' +
+      '<path d="M34 46l-4 4a11 11 0 0 1-16-16l4-4" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>'
   };
 
 

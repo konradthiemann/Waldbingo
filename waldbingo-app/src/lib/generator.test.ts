@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { OBJEKTE } from '../data/objects'
 import type { SpielKontext, WaldObjekt } from '../data/types'
-import { CARD_SIZE, checkBingo, createGame } from './generator'
+import { CARD_SIZE, cardsForGame, checkBingo, createGame } from './generator'
 
 const CONTEXTS: SpielKontext[] = [
   { season: 'herbst', weather: 'nach_regen', time: 'tag', habitat: 'mischwald' },
@@ -46,6 +46,27 @@ describe('createGame – Invarianten', () => {
     const b = createGame({ data: OBJEKTE, ctx, diff: 2, seedStr: 'wald42', players: 2 })
     expect(a.cards[0].map((o) => o.id)).toEqual(b.cards[0].map((o) => o.id))
     expect(a.cards[1].map((o) => o.id)).toEqual(b.cards[1].map((o) => o.id))
+  })
+
+  it('cardsForGame reproduziert die Host-Karten exakt (Geräte-Beitritt)', () => {
+    // Garantie für Mehrspieler: Ein Gast leitet aus Pool + Seed + Spielernummer
+    // dieselbe Karte ab, die der Host für diesen Spieler hat.
+    const ctx = CONTEXTS[2]
+    const host = createGame({ data: OBJEKTE, ctx, diff: 2, seedStr: 'einladung', players: 4 })
+    const guestCards = cardsForGame(host.pool, 'einladung', 4)
+    expect(guestCards).toHaveLength(4)
+    for (let p = 0; p < 4; p++) {
+      expect(guestCards[p].map((o) => o.id)).toEqual(host.cards[p].map((o) => o.id))
+    }
+  })
+
+  it('cardsForGame gibt verschiedenen Spielern verschiedene Reihenfolgen', () => {
+    const host = createGame({ data: OBJEKTE, ctx: CONTEXTS[0], diff: 1, seedStr: 's', players: 3 })
+    const cards = cardsForGame(host.pool, 's', 3)
+    expect(cards[0].map((o) => o.id)).not.toEqual(cards[1].map((o) => o.id))
+    expect(cards[1].map((o) => o.id)).not.toEqual(cards[2].map((o) => o.id))
+    // gleicher Satz an Arten
+    expect(new Set(cards[0].map((o) => o.id))).toEqual(new Set(cards[1].map((o) => o.id)))
   })
 
   it('erzeugt mit verschiedenen Seeds verschiedene Karten', () => {

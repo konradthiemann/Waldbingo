@@ -20,6 +20,9 @@ dist/
 .vite/
 *.tsbuildinfo
 
+# ─── Einladungs-Server: lokal gespeicherte Spiele (TTL-basiert, nicht versioniert) ───
+waldbingo-app/server/games-data/
+
 # ─── Claude Code lokale Tooling-Konfiguration (Preview-Server etc.) ───
 .claude/
 

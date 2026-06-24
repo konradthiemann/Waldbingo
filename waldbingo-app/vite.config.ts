@@ -12,6 +12,12 @@ import { VitePWA } from 'vite-plugin-pwa'
 //    es gibt daher keine runtimeCaching-Regel für tile.openstreetmap.org.
 export default defineConfig({
   base: './',
+  // Dev: /api an den lokalen Einladungs-Server (npm run server) weiterreichen.
+  server: {
+    proxy: {
+      '/api': { target: 'http://localhost:8787', changeOrigin: true },
+    },
+  },
   plugins: [
     react(),
     // HTTPS im Dev/Preview-Server (selbst-signiert) – nötig, damit Geolocation

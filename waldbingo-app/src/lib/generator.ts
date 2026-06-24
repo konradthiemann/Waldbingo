@@ -163,15 +163,28 @@ export interface GeneratedGame {
   cards: WaldObjekt[][]
 }
 
+/** Maximale Spielerzahl (Geräte) pro Spiel. */
+export const MAX_PLAYERS = 10
+
+/**
+ * Leitet aus einem fixen Pool pro Spieler die Karten-Anordnung ab.
+ * Deterministisch: identischer Pool + Seed ⇒ identische Karten auf jedem Gerät.
+ * Genau das ermöglicht „Reihenfolge wird beim Beitreten festgelegt": ein Gast
+ * berechnet seine Anordnung allein aus Pool, Seed und seiner Spielernummer.
+ */
+export function cardsForGame(pool: WaldObjekt[], seedStr: string, players: number): WaldObjekt[][] {
+  const nP = Math.min(MAX_PLAYERS, Math.max(1, players))
+  const cards: WaldObjekt[][] = []
+  for (let p = 0; p < nP; p++) {
+    cards.push(shuffle(pool, mulberry32(strToSeed(seedStr + '_' + p))))
+  }
+  return cards
+}
+
 /** Erzeugt das vollständige Spiel: ein Pool, pro Spieler eigene Anordnung. */
 export function createGame({ data, ctx, diff, seedStr, players }: GameSetup): GeneratedGame {
   const baseRng = mulberry32(strToSeed(seedStr))
   const pool = generateCard(data, ctx, diff, baseRng)
-  const nP = Math.min(10, Math.max(1, players))
-  const cards: WaldObjekt[][] = []
-  for (let p = 0; p < nP; p++) {
-    const rng = mulberry32(strToSeed(seedStr + '_' + p))
-    cards.push(shuffle(pool, rng))
-  }
+  const cards = cardsForGame(pool, seedStr, players)
   return { pool, cards }
 }
