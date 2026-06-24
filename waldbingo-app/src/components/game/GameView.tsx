@@ -49,6 +49,7 @@ export function GameView({ game, onExit, onPrint }: Props) {
     { glyph: 'clock', label: TIME_LABEL[ctx.time] },
     { glyph: 'habitat', label: HABITAT_LABEL[ctx.habitat] },
   ]
+  const fotoCount = game.pool.filter((o) => o._media?.url).length
 
   return (
     <section className="mb-[18px] rounded-xl border border-line bg-white p-3 shadow-wb2 sm:p-5">
@@ -62,6 +63,12 @@ export function GameView({ game, onExit, onPrint }: Props) {
             <b>{p.label}</b>
           </span>
         ))}
+        <span
+          className="inline-flex items-center gap-[7px] rounded-full border border-[#cfe6d6] bg-forest-100 px-3 py-[7px] text-[13px] font-semibold text-forest-900"
+          title="Felder mit echtem Artenfoto (regionale Live-Arten)"
+        >
+          {fotoCount > 0 ? `📷 ${fotoCount} Foto-Arten` : '🎨 generische Karte'}
+        </span>
         <span className="ml-auto inline-flex items-center gap-[7px] rounded-full border border-line bg-white px-3 py-[7px] font-mono text-[13px] font-semibold text-muted">
           <Glyph name="seed" className="block h-[15px] w-[15px]" />
           {game.seedStr}
