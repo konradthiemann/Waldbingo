@@ -86,7 +86,7 @@ export function MapTile({ lat, lng, online, busy, radiusKm, onPick, onLocate }: 
   }, [lat, lng, radiusKm])
 
   return (
-    <div className="relative h-[220px] w-full overflow-hidden rounded-lg border border-line bg-line-2 sm:h-[260px]">
+    <div className="relative isolate h-[220px] w-full overflow-hidden rounded-lg border border-line bg-line-2 sm:h-[260px]">
       <div ref={elRef} className="h-full w-full" />
 
       {!online && (

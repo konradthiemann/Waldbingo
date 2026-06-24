@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Glyph } from './components/Svg'
 import { Dashboard } from './components/dashboard/Dashboard'
 import { GameView } from './components/game/GameView'
+import { LegalView, type LegalPage } from './components/legal/LegalView'
 import { PrintSheet } from './components/print/PrintSheet'
 import { useOnline } from './hooks/useOnline'
 import { clearGame, loadGame } from './lib/db'
@@ -11,6 +12,7 @@ export default function App() {
   const online = useOnline()
   const [game, setGame] = useState<GameState | null>(null)
   const [printWithInfo, setPrintWithInfo] = useState<boolean | null>(null)
+  const [legal, setLegal] = useState<LegalPage | null>(null)
 
   // Aktives Spiel beim Start wiederherstellen.
   useEffect(() => {
@@ -55,14 +57,16 @@ export default function App() {
         </header>
 
         <main className="mx-auto max-w-[920px] px-3 pb-12 pt-[18px] sm:px-4">
-          {!online && (
+          {!online && !legal && (
             <div className="mb-4 rounded-lg border border-amber/40 bg-[#fff7e6] px-4 py-2.5 text-[13px] text-amber-600">
               Offline-Modus: Karte &amp; neue Arten brauchen Netz – erstellte Spiele bleiben voll
               spielbar.
             </div>
           )}
 
-          {game ? (
+          {legal ? (
+            <LegalView page={legal} onClose={() => setLegal(null)} onNavigate={setLegal} />
+          ) : game ? (
             <GameView
               key={game.createdAt}
               game={game}
@@ -74,12 +78,23 @@ export default function App() {
           )}
 
           <footer className="mt-10 text-balance text-center text-[11px] leading-relaxed text-muted">
-            Symbole:{' '}
-            <a className="underline" href="https://openmoji.org" target="_blank" rel="noreferrer">
-              OpenMoji
-            </a>{' '}
-            (CC BY-SA 4.0) · Arten &amp; Fotos: iNaturalist · Karte: © OpenStreetMap · Wetter:
-            Open-Meteo
+            <p>
+              Symbole:{' '}
+              <a className="underline" href="https://openmoji.org" target="_blank" rel="noreferrer">
+                OpenMoji
+              </a>{' '}
+              (CC BY-SA 4.0) · Arten &amp; Fotos: iNaturalist · Karte: © OpenStreetMap · Wetter:
+              Open-Meteo
+            </p>
+            <p className="mt-2">
+              <button type="button" className="underline" onClick={() => setLegal('impressum')}>
+                Impressum
+              </button>{' '}
+              ·{' '}
+              <button type="button" className="underline" onClick={() => setLegal('datenschutz')}>
+                Datenschutz
+              </button>
+            </p>
           </footer>
         </main>
       </div>
