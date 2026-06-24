@@ -36,8 +36,6 @@ export default function App() {
 
   return (
     <>
-      <PosterizeFilter />
-
       <div className="app-screen">
         <header className="sticky top-0 z-30 flex items-center gap-3 bg-gradient-to-br from-forest-700 to-forest-900 px-4 py-3 text-white shadow-[0_4px_18px_rgba(20,51,31,0.28)]">
           <div className="grid h-[42px] w-[42px] flex-none place-items-center rounded-[13px] bg-gradient-to-br from-forest-500 to-forest-700 shadow-wb1 ring-1 ring-inset ring-white/25">
@@ -92,22 +90,5 @@ export default function App() {
         </div>
       )}
     </>
-  )
-}
-
-/** SVG-Filter für den "gemalt"-Look der Illustrations-Stufe (Posterize). */
-function PosterizeFilter() {
-  return (
-    <svg width="0" height="0" aria-hidden="true" style={{ position: 'absolute' }}>
-      <defs>
-        <filter id="wb-posterize">
-          <feComponentTransfer>
-            <feFuncR type="discrete" tableValues="0 0.25 0.5 0.75 1" />
-            <feFuncG type="discrete" tableValues="0 0.25 0.5 0.75 1" />
-            <feFuncB type="discrete" tableValues="0 0.25 0.5 0.75 1" />
-          </feComponentTransfer>
-        </filter>
-      </defs>
-    </svg>
   )
 }

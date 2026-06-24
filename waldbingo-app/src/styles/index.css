@@ -82,12 +82,6 @@ svg.ui-ic {
   animation: wb-rise 0.25s ease;
 }
 
-/* "Gemalt"-Look für Illustrations-Fallback (Foto → posterisiert).
-   Wird auf <img> mit data-style="painted" angewandt. */
-.media-painted {
-  filter: url(#wb-posterize) saturate(1.15) contrast(1.12);
-}
-
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;
@@ -185,19 +179,24 @@ svg.ui-ic {
     text-align: center;
   }
 
-  /* Info-Begleitseite */
+  /* Info-Begleitseite – Inhalt wie das Info-Modal in der App */
   .print-info-row {
     display: flex;
-    gap: 2.5mm;
+    gap: 3mm;
     align-items: flex-start;
-    margin-bottom: 2mm;
+    padding-bottom: 2.5mm;
+    margin-bottom: 2.5mm;
+    border-bottom: 0.2mm solid #e3eae2;
     break-inside: avoid;
     page-break-inside: avoid;
   }
   .print-info-img {
-    width: 9mm;
-    height: 9mm;
+    width: 18mm;
+    height: 18mm;
     flex: none;
+    border: 0.2mm solid #e3eae2;
+    border-radius: 1.5mm;
+    overflow: hidden;
   }
   .print-info-img img,
   .print-info-img svg {
@@ -206,10 +205,34 @@ svg.ui-ic {
     object-fit: contain;
   }
   .print-info-tx {
-    font-size: 9pt;
-    line-height: 1.25;
+    font-size: 8.5pt;
+    line-height: 1.3;
+  }
+  .print-info-tx p {
+    margin: 0.6mm 0 0;
   }
   .print-info-tx b {
     color: #1f5b38;
+  }
+  .print-info-head {
+    display: flex;
+    align-items: baseline;
+    gap: 2mm;
+    margin-bottom: 0.5mm;
+  }
+  .print-info-head b {
+    font-size: 10.5pt;
+    color: #14331f;
+  }
+  .print-info-kat {
+    font-size: 6.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3pt;
+    color: #62716a;
+  }
+  .print-info-credit {
+    font-size: 6.5pt;
+    color: #62716a;
   }
 }

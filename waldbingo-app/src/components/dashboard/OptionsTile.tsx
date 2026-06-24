@@ -14,9 +14,9 @@ interface Props {
 }
 
 const DIFF_HINT: Record<number, string> = {
-  1: 'Piktogramme · generische Funde',
-  2: 'Illustrationen · regionale Arten',
-  3: 'Fotos · seltenere Arten',
+  1: 'Nur Piktogramme · generische Funde',
+  2: 'Mischung aus Piktogrammen & Fotos',
+  3: 'Nur Fotos · regionale Arten',
 }
 
 export function OptionsTile({

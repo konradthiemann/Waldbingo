@@ -11,6 +11,7 @@ vi.mock('./db', () => ({
 }))
 
 import type { SpielKontext } from '../data/types'
+import { getCachedSpecies } from './db'
 import { getRegionalSpecies } from './species'
 
 const ctx: SpielKontext = {
@@ -73,8 +74,8 @@ describe('getRegionalSpecies', () => {
     }
 
     const fp = species.find((s) => s.name === 'Fliegenpilz')!
-    expect(fp._media?.kind).toBe('illustration') // mittel → Illustration
-    expect(fp._media?.painted).toBe(true)
+    expect(fp._media?.kind).toBe('foto') // mittel & schwer → echtes Foto
+    expect(fp._media?.url).toBe('http://x/p1.jpg')
     expect(fp.info.kurz).toContain('roter') // HTML aus wikipedia_summary gestrippt
   })
 
@@ -104,5 +105,23 @@ describe('getRegionalSpecies', () => {
     }) as any
     const species = await getRegionalSpecies({ lat: 51, lng: 10, ctx, diff: 2, delayMs: 0 })
     expect(species).toEqual([])
+  })
+
+  it('ignoriert einen leeren Cache und lädt frisch (kein „Vergiften")', async () => {
+    // Früherer Fehlversuch hat [] gecacht:
+    ;(getCachedSpecies as any).mockResolvedValueOnce([])
+    global.fetch = vi.fn(async (url: any) =>
+      String(url).includes('iconic_taxa=Fungi')
+        ? resp([
+            {
+              count: 50,
+              taxon: { id: 7, name: 'Boletus edulis', preferred_common_name: 'Steinpilz', default_photo: { medium_url: 'http://x/p.jpg' } },
+            },
+          ])
+        : resp([]),
+    ) as any
+    const species = await getRegionalSpecies({ lat: 51, lng: 10, ctx, diff: 2, delayMs: 0 })
+    expect(species.length).toBeGreaterThan(0) // trotz leerem Cache frisch geladen
+    expect(global.fetch).toHaveBeenCalled()
   })
 })

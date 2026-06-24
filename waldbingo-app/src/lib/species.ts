@@ -5,14 +5,7 @@ import type { Kategorie, SpielKontext, WaldObjekt, Wetter } from '../data/types'
 import { seasonToMonths } from './datetime'
 import { bandForMode, difficultyClassifier, MIN_COUNT } from './difficulty'
 import { buildInfo, summaryToKurz } from './info-templates'
-import {
-  categoryFallbackIconId,
-  type INatPhoto,
-  mediaKindForMode,
-  paintedPhotoMedia,
-  photoMedia,
-  resolveCommonsIllustration,
-} from './media'
+import { categoryFallbackIconId, type INatPhoto, photoMedia } from './media'
 import { getCachedSpecies, putCachedSpecies, speciesCacheKey } from './db'
 
 const SPECIES_COUNTS = 'https://api.inaturalist.org/v1/observations/species_counts'
@@ -92,7 +85,6 @@ function normalize(
   kategorie: Kategorie,
   classify: (n: number) => 1 | 2 | 3,
   ctx: SpielKontext,
-  diff: number,
 ): WaldObjekt | null {
   const t = sc.taxon
   const name = t.preferred_common_name?.trim()
@@ -102,8 +94,7 @@ function normalize(
 
   const schwierigkeit = classify(sc.count)
   const kurz = summaryToKurz(t.wikipedia_summary)
-  const kind = mediaKindForMode(diff)
-  const media = kind === 'foto' ? photoMedia(t.default_photo) : paintedPhotoMedia(t.default_photo)
+  const media = photoMedia(t.default_photo)
   const wetter: Wetter[] = ctx.weather ? [ctx.weather] : ['klar', 'bewoelkt']
 
   return {
@@ -127,35 +118,12 @@ function normalize(
   }
 }
 
-interface SciEntry {
-  obj: WaldObjekt
-  sci: string
-}
-
-/** Best-effort: posterisierte Fotos durch echte Commons-Illustrationen ersetzen. */
-async function upgradeIllustrations(
-  entries: SciEntry[],
-  cap: number,
-  signal?: AbortSignal,
-): Promise<void> {
-  let done = 0
-  for (const { obj, sci } of entries) {
-    if (done >= cap) break
-    if (!obj._taxonId || !obj._media?.painted || !sci) continue
-    const better = await resolveCommonsIllustration(obj._taxonId, sci, signal)
-    if (better?.url) obj._media = better
-    done++
-  }
-}
-
 export interface RegionalOptions {
   lat: number
   lng: number
   ctx: SpielKontext
   diff: number
   radiusKm?: number
-  /** Echte Commons-Illustrationen statt stilisierter Fotos versuchen (langsamer). */
-  useCommons?: boolean
   /** Pause zwischen den Gruppen-Calls (Default ~1 req/s). Tests setzen 0. */
   delayMs?: number
   signal?: AbortSignal
@@ -173,12 +141,13 @@ export async function getRegionalSpecies(opts: RegionalOptions): Promise<WaldObj
   const months = seasonToMonths(ctx.season)
   const key = speciesCacheKey(lat, lng, months[0], diff)
   const cached = await getCachedSpecies(key)
-  if (cached) return cached
+  // Leere Treffer NICHT als gültigen Cache behandeln (sonst „vergiftet" ein
+  // früherer Fehlversuch den Ort dauerhaft) → nur nicht-leere Caches nutzen.
+  if (cached && cached.length) return cached
 
   const radiusKm = opts.radiusKm ?? DEFAULT_RADIUS_KM
   const band = bandForMode(diff)
   const all: WaldObjekt[] = []
-  const withSci: SciEntry[] = []
 
   for (let gi = 0; gi < GROUPS.length; gi++) {
     const g = GROUPS[gi]
@@ -191,22 +160,16 @@ export async function getRegionalSpecies(opts: RegionalOptions): Promise<WaldObj
     if (counts.length) {
       const classify = difficultyClassifier(counts.map((c) => c.count))
       for (const sc of counts) {
-        const obj = normalize(sc, g.kategorie, classify, ctx, diff)
-        if (obj && band.has(obj.schwierigkeit)) {
-          all.push(obj)
-          withSci.push({ obj, sci: sc.taxon.name })
-        }
+        const obj = normalize(sc, g.kategorie, classify, ctx)
+        if (obj && band.has(obj.schwierigkeit)) all.push(obj)
       }
     }
     const delay = opts.delayMs ?? GROUP_DELAY_MS
     if (gi < GROUPS.length - 1 && delay > 0) await sleep(delay)
   }
 
-  if (opts.useCommons && diff === 2) {
-    await upgradeIllustrations(withSci, 16, opts.signal)
-  }
-
-  await putCachedSpecies(key, all)
+  // Nur nicht-leere Ergebnisse cachen (kein Vergiften bei Fehlversuch/offline).
+  if (all.length) await putCachedSpecies(key, all)
   return all
 }
 

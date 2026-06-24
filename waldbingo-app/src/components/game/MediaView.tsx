@@ -18,7 +18,7 @@ export function MediaView({ o, variant = 'cell' }: Props) {
   const m = o._media
   const rounded = variant === 'hero' ? 'rounded-2xl' : 'rounded-lg'
 
-  // Live-Foto / Illustration (mittel/schwer)
+  // Echtes Foto (mittel & schwer)
   if (m?.url) {
     return (
       <img
@@ -26,7 +26,7 @@ export function MediaView({ o, variant = 'cell' }: Props) {
         alt={o.name}
         loading="lazy"
         draggable={false}
-        className={`h-full w-full object-cover ${rounded} ${m.painted ? 'media-painted' : ''}`}
+        className={`h-full w-full object-cover ${rounded}`}
       />
     )
   }

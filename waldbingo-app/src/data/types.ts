@@ -44,19 +44,17 @@ export interface ObjektInfo {
   wusstest_du: string
 }
 
-/** Darstellungsstufe (visueller Schwierigkeits-Gradient). */
-export type MediaKind = 'piktogramm' | 'illustration' | 'foto'
+/** Darstellungsstufe: Piktogramm (leicht) oder echtes Foto (mittel & schwer). */
+export type MediaKind = 'piktogramm' | 'foto'
 
 export interface ObjektMedia {
   kind: MediaKind
-  /** Bild-URL (Illustration/Foto). Bei Piktogramm leer (iconId wird genutzt). */
+  /** Bild-URL (Foto). Bei Piktogramm leer (iconId/Emoji wird genutzt). */
   url?: string
   attribution?: string
   license?: string
-  /** Herkunft, z. B. "iNaturalist", "Wikimedia Commons", "PhyloPic". */
+  /** Herkunft, z. B. "iNaturalist". */
   source?: string
-  /** true = Foto wird per CSS-Filter "gemalt" dargestellt (Illustrations-Fallback). */
-  painted?: boolean
 }
 
 export interface WaldObjekt {

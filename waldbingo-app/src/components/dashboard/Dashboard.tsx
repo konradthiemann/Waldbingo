@@ -130,12 +130,30 @@ export function Dashboard({ online, onStart }: Props) {
       if (diff > 1 && lat != null && lng != null && online) {
         setStatus('Suche Arten, die hier gerade vorkommen…')
         const live = await getRegionalSpecies({ lat, lng, ctx, diff, radiusKm })
-        if (live.length) {
-          data = OBJEKTE.concat(live)
-          setStatus(`${live.length} regionale Arten gefunden. Karte wird erstellt…`)
+
+        if (diff === 3) {
+          // Schwer: reine Foto-Karte. Genug Live-Arten → nur Live; sonst mit
+          // Piktogrammen auffüllen, damit immer 25 Felder zustande kommen.
+          if (live.length >= 25) {
+            data = live
+            setStatus(`${live.length} Arten gefunden – reine Foto-Karte.`)
+          } else if (live.length > 0) {
+            data = live.concat(OBJEKTE)
+            setStatus(`Nur ${live.length} regionale Arten – mit Piktogrammen aufgefüllt.`)
+          } else {
+            setStatus('Keine Arten online gefunden – Piktogramm-Karte.')
+          }
         } else {
-          setStatus('Keine passenden Arten online gefunden – nutze die App-Datenbank.')
+          // Mittel: Mischung aus Piktogrammen (kuratiert) und Fotos (Live-Arten).
+          if (live.length) {
+            data = OBJEKTE.concat(live)
+            setStatus(`${live.length} regionale Arten – Mischung aus Bildern & Piktogrammen.`)
+          } else {
+            setStatus('Keine passenden Arten online gefunden – nutze die App-Datenbank.')
+          }
         }
+      } else if (diff > 1 && online && (lat == null || lng == null)) {
+        setStatus('Tipp: Standort wählen, damit regionale Arten (Fotos) erscheinen.')
       }
 
       const seedStr = seed.trim() || 'wb' + Date.now()

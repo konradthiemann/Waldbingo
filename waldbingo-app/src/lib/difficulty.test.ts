@@ -24,9 +24,10 @@ describe('bandForMode', () => {
     expect(b.has(2)).toBe(true)
     expect(b.has(3)).toBe(false)
   })
-  it('schwer akzeptiert mittlere/seltene Arten (2,3)', () => {
+  it('schwer akzeptiert alle Arten (reine Foto-Karte füllen)', () => {
     const b = bandForMode(3)
-    expect(b.has(1)).toBe(false)
+    expect(b.has(1)).toBe(true)
+    expect(b.has(2)).toBe(true)
     expect(b.has(3)).toBe(true)
   })
   it('leicht akzeptiert keine Live-Arten', () => {

@@ -1,3 +1,4 @@
+import type { WaldObjekt } from '../../data/types'
 import type { GameState } from '../../lib/game-state'
 import { HABITAT_LABEL, SEASON_LABEL, TIME_LABEL, WEATHER_LABEL } from '../../lib/labels'
 import { MediaView } from '../game/MediaView'
@@ -14,6 +15,13 @@ function chunk<T>(arr: T[], n: number): T[][] {
   const out: T[][] = []
   for (let i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n))
   return out
+}
+
+/** Bildquelle/Lizenz wie im Info-Modal. */
+function mediaCredit(o: WaldObjekt): string | null {
+  const m = o._media
+  if (!m || !m.source) return null
+  return `${m.attribution ? m.attribution + ' · ' : ''}${m.source}${m.license ? ' (' + m.license + ')' : ''}`
 }
 
 /**
@@ -58,16 +66,35 @@ export function PrintSheet({ game, withInfo }: Props) {
           <h3 className="print-card-title">Mehr Infos zu den Funden</h3>
           <p className="print-card-ctx">{ctxLine}</p>
           <div className="print-info">
-            {game.pool.map((o, i) => (
-              <div className="print-info-row" key={i}>
-                <span className="print-info-img">
-                  <MediaView o={o} />
-                </span>
-                <div className="print-info-tx">
-                  <b>{o.name}:</b> {o.info.kurz} {o.info.wusstest_du}
+            {game.pool.map((o, i) => {
+              const credit = mediaCredit(o)
+              return (
+                <div className="print-info-row" key={i}>
+                  <span className="print-info-img">
+                    <MediaView o={o} />
+                  </span>
+                  <div className="print-info-tx">
+                    <div className="print-info-head">
+                      <b>{o.name}</b>
+                      <span className="print-info-kat">
+                        {o.kategorie}
+                        {o._live ? ' · regional' : ''}
+                      </span>
+                    </div>
+                    <p>
+                      <b>Was ist das?</b> {o.info.kurz}
+                    </p>
+                    <p>
+                      <b>Woran erkenne ich es?</b> {o.info.erkennen}
+                    </p>
+                    <p>
+                      <b>Wusstest du?</b> {o.info.wusstest_du}
+                    </p>
+                    {credit && <p className="print-info-credit">Bild: {credit}</p>}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       )}

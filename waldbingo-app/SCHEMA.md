@@ -79,7 +79,7 @@ saisonal tatsächlich vorkommende Arten** aus der iNaturalist-API in den Pool
 | `_live` | `true` für live geholte Arten (sonst undefiniert) |
 | `_taxonId` | iNaturalist-Taxon-ID (für Medien-/Info-Auflösung) |
 | `_count` | Beobachtungs-Anzahl im Kontext → bestimmt `schwierigkeit` (Perzentil je Gruppe) |
-| `_media` | Darstellung: `{ kind, url?, attribution?, license?, source?, painted? }` |
+| `_media` | Darstellung: `{ kind, url?, attribution?, license?, source? }` |
 
 `id` folgt der Konvention `inat-<taxonId>`; `name` ist der **deutsche Trivialname**
 (`preferred_common_name`, `locale=de`) — Arten ohne deutschen Namen, mit `count < 5` oder
@@ -91,9 +91,9 @@ mit Schutzstatus werden verworfen. `info.kurz` stammt aus der Wikipedia-Zusammen
 
 | Stufe | Darstellung | Quelle |
 |---|---|---|
-| `1` leicht | **Piktogramm** | kuratierte SVGs (`pictograms.js`) |
-| `2` mittel | **Illustration** ("gemalt") | Wikimedia-Commons (gemeinfrei) → sonst stilisiertes iNaturalist-Foto (`painted`) |
-| `3` schwer | **Foto** | iNaturalist `default_photo` (mit Attribution) |
+| `1` leicht | **Piktogramm** (OpenMoji) | offline gebündelte OpenMoji-Symbole |
+| `2` mittel | **Foto** | iNaturalist `default_photo` – häufige regionale Arten |
+| `3` schwer | **Foto** | iNaturalist `default_photo` – seltenere regionale Arten |
 
 > **Eine Quelle der Wahrheit bleibt `objects.json`.** Live-Arten sind eine additive
 > Online-Veredelung; offline/ohne Standort fällt die App vollständig auf die kuratierte

@@ -30,6 +30,6 @@ export function difficultyClassifier(counts: number[]): (count: number) => Schwi
 /** Welche Art-Schwierigkeiten passen zum gewählten Spielmodus? */
 export function bandForMode(diff: number): Set<Schwierigkeit> {
   if (diff === 2) return new Set<Schwierigkeit>([1, 2]) // mittel: häufige, realistisch findbare
-  if (diff === 3) return new Set<Schwierigkeit>([2, 3]) // schwer: seltenere Funde
+  if (diff === 3) return new Set<Schwierigkeit>([1, 2, 3]) // schwer: alle (reine Foto-Karte füllen)
   return new Set<Schwierigkeit>() // leicht: keine Live-Arten
 }
