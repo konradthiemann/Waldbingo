@@ -63,7 +63,10 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: ruff installieren
-        run: pip install ruff
+        # Version gepinnt → reproduzierbare CI. Ungepinntes ruff zieht bei jedem Lauf
+        # die neueste Version, deren geänderte Default-Regeln denselben Code mal grün,
+        # mal rot melden und so required Checks unvorhersehbar blockieren würden.
+        run: pip install ruff==0.15.17
 
       - name: ruff check
         run: ruff check waldbingo.py icons.py waldbingo-app/build_data.py
