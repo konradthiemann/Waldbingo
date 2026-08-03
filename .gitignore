@@ -14,11 +14,16 @@ env/
 /waldbingo.pdf
 *-test.pdf
 
-# ─── Node / geplante Vite+React-Migration (AP 1, NAECHSTE-SCHRITTE.md) ───
+# ─── Node / Vite + React (waldbingo-app) ───
 node_modules/
 dist/
 .vite/
 *.tsbuildinfo
+
+# ─── Lokale Secrets / Umgebungsvariablen (niemals committen) ───
+.env
+.env.*
+!.env.example
 
 # ─── Einladungs-Server: lokal gespeicherte Spiele (TTL-basiert, nicht versioniert) ───
 waldbingo-app/server/games-data/

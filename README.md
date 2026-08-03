@@ -1,12 +1,30 @@
-# 🌲 Waldbingo-Generator
+# 🌲 Waldbingo
 
-Ein Python-Skript, das druckfertige **Waldbingo-Karten** für Kinder als PDF erzeugt.  
-Vier zufällig angeordnete 5×5-Bingokarten passen auf eine DIN-A4-Seite – perfekt zum Ausdrucken und Mitnehmen auf den nächsten Waldspaziergang!
+**Wald-Bingo für Kinder** – in zwei Varianten:
+
+- 🌐 eine **offline-first Web-App (PWA)** mit kontextadaptiven Karten (Jahreszeit, Wetter, Tageszeit, Habitat) und Mehrspieler-Einladung per Code oder Link/QR,
+- 🖨️ ein **Python-Generator**, der druckfertige 5×5-Bingokarten (4 pro DIN-A4-Seite) als PDF erzeugt.
+
+Perfekt zum Ausdrucken und Mitnehmen auf den nächsten Waldspaziergang!
+
+📖 **Dokumentation:** <https://konradthiemann.github.io/Waldbingo/> · 🌐 **Web-App:** <https://waldbingo.konradthiemann.de/>
 
 [![CI](https://github.com/konradthiemann/Waldbingo/actions/workflows/ci.yml/badge.svg)](https://github.com/konradthiemann/Waldbingo/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)
 ![reportlab](https://img.shields.io/badge/PDF-reportlab-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
+
+---
+
+## 🧭 Projektteile
+
+| Teil | Verzeichnis | Stack | Beschreibung |
+|------|-------------|-------|--------------|
+| **Web-App (PWA)** | [`waldbingo-app/`](waldbingo-app/) | React + Vite + TypeScript + Tailwind | Kontextadaptive Bingokarten, offline-first, Mehrspieler per Code/Link/QR. |
+| **PDF-Generator** | Repo-Root ([`waldbingo.py`](waldbingo.py), [`icons.py`](icons.py)) | Python + reportlab | Erzeugt druckfertige A4-Bingokarten – dokumentiert im Rest dieser README. |
+| **Dokumentation** | [`docs/`](docs/) → [`docs-site/`](docs-site/) | Astro Starlight | Single Source of Truth: `docs/*.md`, publiziert unter <https://konradthiemann.github.io/Waldbingo/>. |
+
+> Die folgenden Abschnitte beschreiben den **PDF-Generator**. Für die Web-App siehe deren eigene [README-APP.md](waldbingo-app/README-APP.md) und die [Online-Doku](https://konradthiemann.github.io/Waldbingo/).
 
 ---
 
@@ -131,10 +149,14 @@ optional arguments:
 
 ```
 Waldbingo/
-├── waldbingo.py        # Hauptskript: Layout, Randomisierung, PDF-Erzeugung
-├── icons.py            # 25 Strichicon-Zeichenfunktionen (reportlab Canvas)
-├── requirements.txt    # Python-Abhängigkeiten (reportlab)
-└── README.md           # Diese Dokumentation
+├── waldbingo.py          # PDF-Generator: Layout, Randomisierung, PDF-Erzeugung
+├── icons.py              # 25 Strichicon-Zeichenfunktionen (reportlab Canvas)
+├── requirements.txt      # Python-Abhängigkeiten (reportlab)
+├── waldbingo-app/        # Web-App (React + Vite PWA) inkl. Einladungs-Server
+├── docs/                 # Doku-Quellen (Markdown, Single Source of Truth)
+├── docs-site/            # Astro-Starlight-Site → GitHub Pages
+├── .github/workflows/    # CI (Python/Daten/PDF/Web) + Docs-Deploy
+└── README.md             # Diese Dokumentation (PDF-Generator)
 ```
 
 ### `waldbingo.py`
