@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1f5b38" />
+    <title>Waldbingo – Offline</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        color: #1d2a22;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem;
+        background: #eaf1e8;
+      }
+      .icon { font-size: 48px; margin-bottom: 1rem; }
+      h1 { font-size: 1.5rem; font-weight: 800; color: #14331f; margin-bottom: 0.5rem; }
+      p { font-size: 0.95rem; color: #62716a; margin-bottom: 1.5rem; max-width: 320px; }
+      button {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #fff;
+        background: #1f5b38;
+        border: none;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="icon">🌲</div>
+    <h1>Du bist offline</h1>
+    <p>Waldbingo braucht beim ersten Start eine Internetverbindung. Bereits erstellte Spiele bleiben offline spielbar.</p>
+    <button onclick="window.location.reload()">Erneut versuchen</button>
+  </body>
+</html>

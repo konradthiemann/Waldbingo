@@ -71,8 +71,29 @@ export async function saveGame(game: Omit<StoredGame, 'id'>): Promise<void> {
   await db.games.put({ ...game, id: ACTIVE })
 }
 
+/** Shape-Check: prueft ob ein geladenes Spiel die erwartete Struktur hat. */
+function isValidStoredGame(g: unknown): g is StoredGame {
+  if (!g || typeof g !== 'object') return false
+  const r = g as Record<string, unknown>
+  return (
+    Array.isArray(r.pool) &&
+    r.pool.length > 0 &&
+    Array.isArray(r.cards) &&
+    Array.isArray(r.found) &&
+    typeof r.seedStr === 'string' &&
+    typeof r.players === 'number' &&
+    typeof r.createdAt === 'number'
+  )
+}
+
 export async function loadGame(): Promise<StoredGame | undefined> {
-  return db.games.get(ACTIVE)
+  const g = await db.games.get(ACTIVE)
+  if (!g) return undefined
+  if (!isValidStoredGame(g)) {
+    await db.games.delete(ACTIVE)
+    return undefined
+  }
+  return g
 }
 
 export async function updateFound(found: number[][], activePlayer: number): Promise<void> {
