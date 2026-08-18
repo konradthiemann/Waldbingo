@@ -9,6 +9,8 @@
 // Abhängigkeit. Für dauerhaften Bestand über Neustarts auf Railway ein Volume
 // mounten und DATA_DIR auf den Mount-Pfad setzen.
 import express from 'express'
+import helmet from 'helmet'
+import rateLimit from 'express-rate-limit'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -83,7 +85,64 @@ function sweep() {
 
 const app = express()
 app.disable('x-powered-by')
+
+// ── Security Headers (helmet) ────────────────────────────────────────────────
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: [
+          "'self'",
+          'data:',
+          'blob:',
+          'https://tile.openstreetmap.org',
+          'https://*.tile.openstreetmap.org',
+          'https://static.inaturalist.org',
+          'https://inaturalist-open-data.s3.amazonaws.com',
+        ],
+        connectSrc: [
+          "'self'",
+          'https://api.open-meteo.com',
+          'https://nominatim.openstreetmap.org',
+          'https://api.inaturalist.org',
+          'https://static.inaturalist.org',
+          'https://inaturalist-open-data.s3.amazonaws.com',
+        ],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+        workerSrc: ["'self'"],
+        manifestSrc: ["'self'"],
+      },
+    },
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginEmbedderPolicy: false,
+  }),
+)
+
+// ── Rate Limiting ────────────────────────────────────────────────────────────
+app.use(
+  rateLimit({
+    windowMs: 60 * 1000,
+    max: 120,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'rate_limit' },
+  }),
+)
+
 app.use(express.json({ limit: '512kb' }))
+
+// ── Source Maps blockieren ───────────────────────────────────────────────────
+app.use((req, res, next) => {
+  if (req.path.endsWith('.map')) return res.status(404).end()
+  next()
+})
 
 // ── API ─────────────────────────────────────────────────────────────────────
 app.post('/api/games', (req, res) => {
@@ -127,6 +186,8 @@ if (hasDist) {
   app.use(express.static(DIST_DIR, { index: false }))
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api/')) return next()
+    // SPA-Fallback: nur HTML für text/html-Requests, sonst 404
+    if (!req.accepts('html')) return res.status(404).end()
     res.sendFile(path.join(DIST_DIR, 'index.html'))
   })
 }
