@@ -21,7 +21,7 @@ interface Props {
 /** Kamera-Flow: welches Feld wird gerade per Foto verifiziert? */
 interface CameraState {
   idx: number
-  phase: 'camera' | 'verify'
+  phase: 'choose' | 'camera' | 'verify'
   canvas?: HTMLCanvasElement
 }
 
@@ -117,7 +117,7 @@ export function GameView({ game, onExit, onPrint, onInvite }: Props) {
             found={playerFound.has(idx)}
             hasCamera={HAS_CAMERA}
             onToggle={() => toggle(idx)}
-            onPhoto={() => setCameraState({ idx, phase: 'camera' })}
+            onPhoto={() => setCameraState({ idx, phase: 'choose' })}
             onInfo={() => setModalIdx(idx)}
           />
         ))}
@@ -186,6 +186,53 @@ export function GameView({ game, onExit, onPrint, onInvite }: Props) {
           }}
           onClose={() => setModalIdx(null)}
         />
+      )}
+
+      {/* Auswahl-Modal: Foto oder Manuell */}
+      {cameraState?.phase === 'choose' && (
+        <div
+          className="anim-fade fixed inset-0 z-50 flex items-center justify-center bg-[rgba(20,33,25,0.5)] p-5 backdrop-blur-[3px]"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setCameraState(null)
+          }}
+        >
+          <div className="anim-rise w-full max-w-[340px] rounded-xl bg-white p-6 shadow-wb3">
+            <h3 className="mb-1 text-center text-[20px] font-extrabold text-forest-900">
+              {card[cameraState.idx].name}
+            </h3>
+            <p className="mb-5 text-center text-[14px] text-muted">
+              Wie moechtest du es abhaken?
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={() => setCameraState({ ...cameraState, phase: 'camera' })}
+                className="focus-ring flex w-full items-center justify-center gap-3 rounded-lg bg-gradient-to-br from-forest-600 to-forest-700 px-5 py-4 text-[16px] font-bold text-white shadow-wb1"
+              >
+                <span className="text-[22px]">📷</span>
+                Foto aufnehmen
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  markFound(cameraState.idx)
+                  setCameraState(null)
+                }}
+                className="focus-ring flex w-full items-center justify-center gap-3 rounded-lg border-[1.5px] border-forest-300 bg-white px-5 py-4 text-[16px] font-bold text-forest-700 hover:bg-forest-100"
+              >
+                <Glyph name="check" className="block h-5 w-5 text-ok" />
+                Manuell abhaken
+              </button>
+              <button
+                type="button"
+                onClick={() => setCameraState(null)}
+                className="mt-1 w-full text-center text-[14px] font-semibold text-muted hover:text-forest-700"
+              >
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Kamera-Flow */}
