@@ -4,8 +4,10 @@ import type { GameState } from '../../lib/game-state'
 import { checkBingo } from '../../lib/generator'
 import { HABITAT_LABEL, SEASON_LABEL, TIME_LABEL, WEATHER_LABEL } from '../../lib/labels'
 import { Glyph } from '../Svg'
+import { CameraCapture } from './CameraCapture'
 import { Cell } from './Cell'
 import { InfoModal } from './InfoModal'
+import { PhotoVerify } from './PhotoVerify'
 import { PlayerTabs } from './PlayerTabs'
 import { ProgressBar } from './ProgressBar'
 
@@ -16,10 +18,22 @@ interface Props {
   onInvite: () => void
 }
 
+/** Kamera-Flow: welches Feld wird gerade per Foto verifiziert? */
+interface CameraState {
+  idx: number
+  phase: 'camera' | 'verify'
+  canvas?: HTMLCanvasElement
+}
+
+const HAS_CAMERA =
+  typeof navigator !== 'undefined' &&
+  !!navigator.mediaDevices?.getUserMedia
+
 export function GameView({ game, onExit, onPrint, onInvite }: Props) {
   const [found, setFound] = useState<Set<number>[]>(game.found)
   const [activePlayer, setActivePlayer] = useState(game.activePlayer)
   const [modalIdx, setModalIdx] = useState<number | null>(null)
+  const [cameraState, setCameraState] = useState<CameraState | null>(null)
   // Geteiltes Spiel (über mehrere Geräte): Gerät ist auf einen Spieler fixiert.
   const isShared = game.selfPlayer != null
 
@@ -33,6 +47,14 @@ export function GameView({ game, onExit, onPrint, onInvite }: Props) {
 
   const card = game.cards[activePlayer]
   const playerFound = found[activePlayer]
+
+  const markFound = (idx: number) => {
+    setFound((prev) => {
+      const next = prev.map((s) => new Set(s))
+      next[activePlayer].add(idx)
+      return next
+    })
+  }
 
   const toggle = (idx: number) => {
     setFound((prev) => {
@@ -93,7 +115,9 @@ export function GameView({ game, onExit, onPrint, onInvite }: Props) {
             key={idx}
             o={o}
             found={playerFound.has(idx)}
+            hasCamera={HAS_CAMERA}
             onToggle={() => toggle(idx)}
+            onPhoto={() => setCameraState({ idx, phase: 'camera' })}
             onInfo={() => setModalIdx(idx)}
           />
         ))}
@@ -102,9 +126,19 @@ export function GameView({ game, onExit, onPrint, onInvite }: Props) {
       <ProgressBar found={playerFound.size} total={25} bingo={bingo} />
 
       <div className="mt-3.5 flex flex-wrap items-center justify-center gap-1.5 text-center text-[12.5px] text-muted">
-        Tippe ein Feld an, wenn du es gefunden hast –
-        <Glyph name="info" className="inline-block h-[15px] w-[15px] text-forest-500" />
-        öffnet mehr Infos.
+        {HAS_CAMERA ? (
+          <>
+            Tippe ein Feld an: 📷 Foto-Erkennung oder manuell abhaken –
+            <Glyph name="info" className="inline-block h-[15px] w-[15px] text-forest-500" />
+            öffnet Infos.
+          </>
+        ) : (
+          <>
+            Tippe ein Feld an, wenn du es gefunden hast –
+            <Glyph name="info" className="inline-block h-[15px] w-[15px] text-forest-500" />
+            öffnet mehr Infos.
+          </>
+        )}
       </div>
 
       <div className="no-print mt-5 flex flex-wrap gap-3">
@@ -151,6 +185,27 @@ export function GameView({ game, onExit, onPrint, onInvite }: Props) {
             setModalIdx(null)
           }}
           onClose={() => setModalIdx(null)}
+        />
+      )}
+
+      {/* Kamera-Flow */}
+      {cameraState?.phase === 'camera' && (
+        <CameraCapture
+          onCapture={(canvas) => setCameraState({ ...cameraState, phase: 'verify', canvas })}
+          onClose={() => setCameraState(null)}
+        />
+      )}
+
+      {cameraState?.phase === 'verify' && cameraState.canvas && (
+        <PhotoVerify
+          canvas={cameraState.canvas}
+          target={card[cameraState.idx]}
+          onConfirm={() => {
+            markFound(cameraState.idx)
+            setCameraState(null)
+          }}
+          onRetry={() => setCameraState({ idx: cameraState.idx, phase: 'camera' })}
+          onCancel={() => setCameraState(null)}
         />
       )}
     </section>

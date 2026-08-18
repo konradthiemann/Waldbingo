@@ -308,7 +308,21 @@ function Datenschutz() {
         Anwendung bleibt nutzbar, indem du deinen Ort direkt auf der Karte antippst.
       </P>
 
-      <H2>9. Externe Dienste (Karte, Wetter, Arten)</H2>
+      <H2>9. Foto-Erkennung (Kamera)</H2>
+      <P>
+        Waldbingo bietet eine optionale Foto-Funktion: Du kannst ein Bingo-Feld per Kamerafoto
+        verifizieren. Die Bilderkennung erfolgt dabei <b>vollstaendig lokal auf deinem Geraet</b>
+        mithilfe eines vortrainierten ML-Modells (MobileNet via TensorFlow.js), das im Browser
+        ausgefuehrt wird. Dein Foto wird <b>nicht</b> an einen Server uebertragen – weder an den
+        Betreiber noch an Dritte. Das ML-Modell wird beim ersten Gebrauch einmalig von Google-Servern
+        (storage.googleapis.com) heruntergeladen und anschliessend lokal im Browser gecacht. Bei diesem
+        Download wird technisch bedingt deine IP-Adresse an Google uebermittelt. Rechtsgrundlage ist
+        deine Einwilligung zur Kameranutzung (Art. 6 Abs. 1 lit. a DSGVO) sowie das berechtigte
+        Interesse an der Bereitstellung der Spielfunktion (Art. 6 Abs. 1 lit. f DSGVO). Die
+        Kameranutzung ist freiwillig; du kannst Felder jederzeit auch manuell abhaken.
+      </P>
+
+      <H2>10. Externe Dienste (Karte, Wetter, Arten)</H2>
       <P>
         Um Karte, Wetter und regionale Arten bereitzustellen, ruft die Anwendung – nur wenn du online
         bist – Inhalte von folgenden Drittanbietern direkt aus deinem Browser ab. Dabei wird technisch
@@ -332,15 +346,16 @@ function Datenschutz() {
         Offline-Modus erfolgt kein Abruf; bereits erstellte Spiele bleiben spielbar.
       </P>
 
-      <H2>10. Empfänger der Daten</H2>
+      <H2>11. Empfänger der Daten</H2>
       <P>
         Empfänger bzw. Kategorien von Empfängern personenbezogener Daten sind der Hosting-Anbieter
-        (Railway) als Auftragsverarbeiter sowie die unter Ziffer 8 genannten Anbieter von Karten-, Wetter-
-        und Artendaten. Eine darüber hinausgehende Weitergabe an Dritte findet nicht statt, es sei denn,
-        ich bin gesetzlich dazu verpflichtet.
+        (Railway) als Auftragsverarbeiter, die unter Ziffer 10 genannten Anbieter von Karten-, Wetter-
+        und Artendaten sowie Google (einmaliger Download des ML-Modells, siehe Ziffer 9). Eine darüber
+        hinausgehende Weitergabe an Dritte findet nicht statt, es sei denn, ich bin gesetzlich dazu
+        verpflichtet.
       </P>
 
-      <H2>11. Speicherdauer</H2>
+      <H2>12. Speicherdauer</H2>
       <P>
         Lokal gespeicherte Spieldaten verbleiben so lange auf deinem Gerät, bis du das Spiel verlässt, die
         Daten überschreibst oder die Speicherdaten deines Browsers löschst. Zwischengespeicherte Arten
@@ -351,7 +366,7 @@ function Datenschutz() {
         unberührt.
       </P>
 
-      <H2>12. Deine Rechte</H2>
+      <H2>13. Deine Rechte</H2>
       <P>
         Du hast jederzeit das Recht auf Auskunft über die zu deiner Person gespeicherten Daten (Art. 15
         DSGVO), Berichtigung unrichtiger Daten (Art. 16 DSGVO), Löschung (Art. 17 DSGVO), Einschränkung
@@ -363,7 +378,7 @@ function Datenschutz() {
         oben genannte Kontaktadresse.
       </P>
 
-      <H2>13. Beschwerderecht bei der Aufsichtsbehörde</H2>
+      <H2>14. Beschwerderecht bei der Aufsichtsbehörde</H2>
       <P>
         Unbeschadet anderweitiger Rechtsbehelfe steht dir das Recht zu, dich bei einer
         Datenschutz-Aufsichtsbehörde zu beschweren (Art. 77 DSGVO). Die zuständige Aufsichtsbehörde ist:
@@ -392,7 +407,7 @@ function Datenschutz() {
         </a>
       </P>
 
-      <H2>14. SSL-/TLS-Verschlüsselung</H2>
+      <H2>15. SSL-/TLS-Verschlüsselung</H2>
       <P>
         Diese Anwendung nutzt aus Sicherheitsgründen eine SSL- bzw. TLS-Verschlüsselung. Eine
         verschlüsselte Verbindung erkennst du daran, dass die Adresszeile des Browsers mit „https://“
@@ -400,7 +415,7 @@ function Datenschutz() {
         von Dritten mitgelesen werden.
       </P>
 
-      <H2>15. Pflicht zur Bereitstellung</H2>
+      <H2>16. Pflicht zur Bereitstellung</H2>
       <P>
         Für die Nutzung von Waldbingo ist kein Nutzerkonto und keine Angabe personenbezogener Daten
         erforderlich. Die Freigabe deines Standorts ist freiwillig; ohne sie kannst du deinen Ort

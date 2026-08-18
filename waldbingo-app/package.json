@@ -18,6 +18,8 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@tensorflow-models/mobilenet": "^2.1.1",
+    "@tensorflow/tfjs": "^4.22.0",
     "dexie": "^4.0.10",
     "express": "^4.21.2",
     "express-rate-limit": "^8.6.2",

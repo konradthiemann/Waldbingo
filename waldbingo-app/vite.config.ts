@@ -107,6 +107,16 @@ export default defineConfig({
       devOptions: { enabled: false },
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'tf-runtime': ['@tensorflow/tfjs'],
+          'tf-mobilenet': ['@tensorflow-models/mobilenet'],
+        },
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,
