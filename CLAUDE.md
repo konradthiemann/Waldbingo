@@ -34,7 +34,7 @@ waldbingo-app/                  # Haupt-App (PWA + Server)
       game-state.ts             # GameState-Typ, Konvertierung stored/shared
       share.ts                  # Kompakte Kodierung fuer Link/QR, URL-Parsing
       api.ts                    # Client fuer den Einladungs-Code-Server
-      db.ts                     # IndexedDB-Persistenz (Dexie): Spiel, Einstellungen (inkl. soundOn), Caches
+      db.ts                     # IndexedDB-Persistenz (Dexie): Spiel, Einstellungen (inkl. soundOn, hapticsOn), Caches
       species.ts                # iNaturalist-Pipeline: regionale Arten holen + normalisieren
       difficulty.ts             # Haeufigkeit -> Schwierigkeit (Perzentil-basiert)
       weather.ts                # Open-Meteo-Anbindung, WMO-Code-Mapping
@@ -48,21 +48,24 @@ waldbingo-app/                  # Haupt-App (PWA + Server)
       classifier.ts             # Foto-Erkennung im Browser (TensorFlow.js MobileNet)
       scene.ts                  # Szenen-Engine: deriveScene() -> Palette + Flags, sceneCssVars(),
                                 #   parseSceneOverride() fuer ?scene=jahreszeit,wetter,tageszeit
-      wingo-lines.ts            # Wingos Sprueche je Situation und Kontext (<= 90 Zeichen)
+      wingo-lines.ts            # Wingos Sprueche je Situation und Kontext (<= 90 Zeichen),
+                                #   Schritt-Wahl setupSituation() (Planen) und photoSituation() (Foto-Pruefung)
       bingo-lines.ts            # Bingo-Linien, 4-von-5-Linien, Klick-Ereignis (found/almost/bingo/full)
-      sfx.ts                    # Klaenge per WebAudio (synthetisiert) + Vibration, Ton an/aus
+      sfx.ts                    # Klaenge per WebAudio (synthetisiert) + Vibration, Ton und Vibration getrennt schaltbar
     hooks/
       useGeolocation.ts         # Browser Geolocation API
       useOnline.ts              # Online/Offline-Status
       useScrolled.ts            # Seite gescrollt? (HUD wird Milchglas)
       useSound.ts               # Ton-Schalter, gespeichert in den Einstellungen
+      useHaptics.ts             # Vibrations-Schalter (nur Touch-Geraete mit Vibration), gespeichert
     icons/
       pictograms.ts             # Inline-SVG-Piktogramme
     components/
       Svg.tsx                   # SVG-Glyph-Komponente
       ErrorBoundary.tsx         # Fehlerseite mit traurigem Wingo (nur Inline-Styles)
       ui/                       # UI-Kit: Panel, WoodSign, GameButton, Modal, SpeechBubble, Badge, IconButton
-      scene/                    # Hintergrund-Szene: ForestScene (Inline-SVG-Ebenen) + ParticleCanvas
+      scene/                    # Hintergrund-Szene: ForestScene (Inline-SVG-Ebenen) + ParticleCanvas,
+                                #   Szenen-Context (scene-context.ts), Sparmodus (perf-mode.ts)
       characters/               # Wingo, Waldfreunde (Friend, PlayerAvatar), WingoSays (Sprechblase)
       fx/                       # Effekte: Celebration (Feier-Overlay), LeafBurst, Portal, useReducedMotion
       home/                     # Startbildschirm (TitleScreen, GameLogo), HUD, Fusszeile, Shell-Icons
@@ -72,9 +75,12 @@ waldbingo-app/                  # Haupt-App (PWA + Server)
       legal/                    # Impressum + Datenschutz
       print/                    # Druck-Layout (Bingokarten + Info-Begleitseite)
       share/                    # Einladungs-Modal (Code, Link, QR)
-      studio/                   # Werkbank unter ?studio: Szene, Figuren (=figuren), Spielbrett (=spiel)
+      studio/                   # Werkbank unter ?studio: Szene, Figuren (=figuren), Spielbrett (=spiel),
+                                #   Foto-Pruefung mit festem Ergebnis: ?studio=spiel&photo=passt|unsicher|anderes|fehler|offline|laedt|prueft
   public/emoji/                 # OpenMoji-SVGs (CC BY-SA 4.0)
   public/wingo-face.svg         # App-Icon: Wingos Gesicht (aus der Wingo-Komponente gerendert)
+  public/icon-*.png             # PWA-Icons aus wingo-face.svg: any (192/512), maskable (192/512),
+                                #   apple-touch-icon.png (180)
   objects.data.js               # Generierter Objekt-Pool (von build_data.py)
   objects.json                  # Gleicher Pool als JSON
   pictograms.js                 # Inline-SVG-Daten
@@ -97,6 +103,8 @@ Leitbild „Cozy Woodland“: gemuetliches Wald-Abenteuerspiel mit dem Waldmonst
 weiche Formen, dicke Konturen im dunkleren Eigenton (nie Schwarz), flach + ein Schattenton +
 ein Glanzlicht. Sanfte, federnde Bewegung, kurze Belohnungs-Effekte (hoechstens 2,5 s).
 Lesbarkeit geht vor Atmosphaere: Inhalte stehen auf Papier-Panels.
+Ausfuehrliche Gestaltungsregeln (Stil, Figuren-Bibel, Dialog-Stil, Szene, Screens):
+`docs/design/wingo-art-bible.md`.
 
 ### Farben/Tokens (tailwind.config.ts)
 - **forest**: 950 `#0f2617` bis 100 `#dcefe1` (u. a. 900 `#14331f`, 700 `#1f5b38`, 600 `#2f7d4f`, 500 `#3f9d63`)
@@ -142,10 +150,21 @@ auf dem Startbildschirm Uhrzeit plus zuletzt geladenes Wetter (juenger als 12 St
 - `ForestScene` (`{ scene, calm?, contained? }`): fixiert hinter der App, `aria-hidden`, im Druck
   unsichtbar. Ebenen: Himmel, Sonne/Mond, Sterne, Wolken, Regenbogen, Huegel, Baumreihen,
   Nebel, Vordergrund, rahmende Baeume, Dunst.
+- Sonne/Mond: Hochformat fest rechts oben, Breitformat unter 1024 px je Tageszeit (`BODY_POS`),
+  Desktop ab 1024 px als Tagesbogen ueber die freien Raender und die Mitte ganz oben
+  (`BODY_POS_DESKTOP`: morgens links, mittags oben Mitte, abends rechts) – per Container-Query
+  in `scene.css`.
+- `SceneProvider`/`useCurrentScene()` (`scene/scene-context.ts`): App.tsx stellt die sichtbare
+  `SceneState` als Context bereit; Figuren lesen daraus z. B. das Tageslicht (Wingos Laterne).
 - Ein `<canvas>` fuer Partikel (Regen, Schnee, Blaetter, Bluetenblaetter, Gluehwuermchen),
   ein rAF-Loop, Pause bei verstecktem Tab, DPR hoechstens 2, Partikelzahl nach Flaeche.
 - `calm` friert die Partikel als Standbild ein und haelt Idle-Animationen an (gesetzt bei offenen
   Modals, Feiern und beim Erstellen einer Karte).
+- Sparmodus (`scene/perf-mode.ts`, nur auf gemessen langsamen Geraeten, steigt pro Sitzung nur
+  auf): Lief ein Szenenwechsel unter 45 fps, blendet die Szene kuenftig in 5 Stufen statt in jedem
+  Bild ueber (`data-fx="steps"`); liegt auch der Ruhezustand ueber zwei 3-s-Fenster unter 40 fps,
+  zusaetzlich halbes Partikel-Budget, Baeume/Graeser wiegen nicht, Wingo atmet nicht
+  (`data-fx="lite"`). Fuer QA fest einstellbar per `?fx=full|steps|lite`.
 - `prefers-reduced-motion`: ruhiges Standbild.
 
 ### UI-Kit (`components/ui`, Import aus `'../ui'`)
@@ -162,7 +181,9 @@ auf dem Startbildschirm Uhrzeit plus zuletzt geladenes Wetter (juenger als 12 St
   Blatt-Flecken. Props: `mood` (`idle`, `happy`, `cheer`, `wave`, `think`, `sleep`, `surprised`,
   `sad`), `variant` (`full`, `peek` = ueber eine Kante schauen, `face` = Kopf-Ausschnitt),
   `size`, `season`/`weather`/`night` (Accessoires: Regenhut, Schal, Bluetenkranz, Herbstblatt,
-  Laterne), `talking`, `animated`, `title`.
+  Laterne), `lantern` (Laterne explizit; ohne Angabe bei `night` oder wenn die Szene aus dem
+  `SceneProvider` dunkel genug ist: Daemmerung, Nacht, Abende unter Wolken/Nebel/Schnee/Regen und
+  Winterabende, `sceneNeedsLantern`), `talking`, `animated`, `title`.
 - **Waldfreunde** (`Friend`, `FRIENDS`): Olli (Eule, erklaert im Info-Modal), Flitz (Eichhoernchen,
   „Mittel“), Stupsi (Igel), Pilzi (Steinpilz-Wichtel, „Leicht“), Fine (Fuechsin, „Experte“).
 - **Spieler-Avatare**: `PlayerAvatar` + `playerName` – Freunde reihum, ab Spieler 6 mit Ringfarbe
@@ -171,7 +192,7 @@ auf dem Startbildschirm Uhrzeit plus zuletzt geladenes Wetter (juenger als 12 St
 - Dialog-Stil: hoechstens 90 Zeichen, Du-Form, fuer 4–10 Jahre, positiv, gern mit Wald-Wissen.
 
 ### Layout-Muster
-- Schlanke HUD-Leiste (Logo-Pille, Offline-Plakette, Ton-Schalter), beim Scrollen Milchglas
+- Schlanke HUD-Leiste (Logo-Pille, Offline-Plakette, Vibrations- und Ton-Schalter), beim Scrollen Milchglas
 - Inhalt `w-full max-w-[920px]` zentriert (Beitreten 620px), Fusszeile als Milchglas-Pille
 - Ueberschriften direkt auf der Szene mit `.scene-title`, alle anderen Inhalte auf Papier-Panels
 - Spielbrett: Holzbrett mit 5×5 Creme-Kacheln, Wingo schaut ueber den oberen Rand;
