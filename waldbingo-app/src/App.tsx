@@ -10,6 +10,7 @@ import { JoinView } from './components/join/JoinView'
 import { LegalView, type LegalPage } from './components/legal/LegalView'
 import { PrintSheet } from './components/print/PrintSheet'
 import { ForestScene } from './components/scene/ForestScene'
+import { SceneProvider } from './components/scene/scene-context'
 import { ShareModal } from './components/share/ShareModal'
 import { useOnline } from './hooks/useOnline'
 import { useHaptics } from './hooks/useHaptics'
@@ -340,7 +341,8 @@ export default function App() {
     showShare || (screen === 'game' && gameOverlay) || (screen === 'plan' && planBusy && !legal)
 
   return (
-    <>
+    // Aktuelle Szene für Figuren (z. B. Wingos Laterne an dunklen Abenden).
+    <SceneProvider value={scene}>
       <ForestScene scene={scene} calm={calm} />
       {/* Startbildschirm: genau eine Fensterhöhe (kleinste Höhe 580 px, darunter scrollt die Seite). */}
       <div
@@ -381,6 +383,6 @@ export default function App() {
           <PrintSheet game={game} withInfo={printWithInfo} />
         </div>
       )}
-    </>
+    </SceneProvider>
   )
 }

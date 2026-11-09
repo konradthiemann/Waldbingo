@@ -7,7 +7,8 @@ import { STARS } from './geometry'
 import { mv } from './scene-mixes'
 
 /**
- * Lage von Sonne/Mond je Tageszeit (Prozent der Szene) im Quer-/Breitformat.
+ * Lage von Sonne/Mond je Tageszeit (Prozent der Szene) im Quer-/Breitformat
+ * unter 1024 px (Tablet quer, kleines Fenster – Inhalte einspaltig in der Mitte).
  * Morgens Osten (links), abends Westen. Im Hochformat (Seitenverhältnis < 0,8)
  * stehen die Gestirne dagegen immer in einer festen, freien Ecke rechts oben
  * (BODY_POS_TALL, umgesetzt in scene.css per Container-Query) – dort verdecken
@@ -24,6 +25,26 @@ export const BODY_POS: Record<Tageszeit, { left: number; top: number }> = {
 
 /** Feste Lage der Gestirne im Hochformat (scene.css schaltet per Container-Query darauf um). */
 export const BODY_POS_TALL = { left: 84, top: 10 } as const
+
+/** Mittag/Nacht am Desktop: ganz oben, Scheibe 10 px unter der Oberkante (Größe aus scene.css). */
+const DESK_HIGH = 'calc(var(--scx-disc) * 0.5 + 10px)'
+
+/**
+ * Lage am Desktop (Breitformat ab 1024 px, scene.css). Freie Zonen auf allen
+ * Bildschirmen: die schmalen Ränder links/rechts neben Logo, Inhalts-Spalte
+ * (max. 920 px) und Seitenleiste – unter HUD-Logo bzw. Ton-Knopf, über den
+ * Kronen der Rahmen-Bäume – sowie die Mitte ganz oben (zwischen Logo- und
+ * Wingo-Spalte, über Überschriften und Sprechblasen). Daraus ein Tagesbogen:
+ * morgens tief im Osten (links), mittags hoch in der Mitte, abends tief im
+ * Westen (rechts); der Mond geht in der Dämmerung links auf und steht nachts oben.
+ */
+export const BODY_POS_DESKTOP: Record<Tageszeit, { left: string; top: string }> = {
+  morgen: { left: '6%', top: '16%' },
+  tag: { left: '50%', top: DESK_HIGH },
+  abend: { left: '94%', top: '16%' },
+  daemmerung: { left: '6%', top: '14%' },
+  nacht: { left: '50%', top: DESK_HIGH },
+}
 
 /** Horizont-Glühen: Morgens im Osten (links), abends im Westen (rechts). */
 const HORIZON_X: Record<Tageszeit, number> = { morgen: 28, tag: 50, abend: 72, daemmerung: 40, nacht: 50 }
@@ -72,6 +93,7 @@ export function SceneSky({ uid, scene }: { uid: string; scene: SceneState }) {
 }
 
 function Celestial({ uid, scene, pos }: { uid: string; scene: SceneState; pos: { left: number; top: number } }) {
+  const desk = BODY_POS_DESKTOP[scene.time]
   const sun = scene.celestial === 'sun'
   const moon = scene.celestial === 'moon'
   // Sonne hinter Wolken/Nebel: nur ein heller, diffuser Fleck.
@@ -89,6 +111,8 @@ function Celestial({ uid, scene, pos }: { uid: string; scene: SceneState; pos: {
           '--by-wide': `${pos.top}%`,
           '--bx-tall': `${BODY_POS_TALL.left}%`,
           '--by-tall': `${BODY_POS_TALL.top}%`,
+          '--bx-desk': desk.left,
+          '--by-desk': desk.top,
         } as CSSProperties
       }
     >

@@ -6,10 +6,10 @@
 import { type ReactNode, useState } from 'react'
 import type { Jahreszeit, Wetter } from '../../data/types'
 import { SEASON_LABEL, TIME_LABEL, WEATHER_LABEL } from '../../lib/labels'
-import type { SceneInput } from '../../lib/scene'
+import { deriveScene, type SceneInput } from '../../lib/scene'
 import { WINGO_SITUATIONS, type WingoSituation, wingoLine, wingoLines, wingoMood } from '../../lib/wingo-lines'
 import { FRIEND_MOODS, FRIEND_ORDER, FRIENDS, Friend, PlayerAvatar, playerName } from '../characters/Friends'
-import { WINGO_MOODS, Wingo, type WingoMood, wingoGear } from '../characters/Wingo'
+import { sceneNeedsLantern, WINGO_MOODS, Wingo, type WingoMood, wingoGear } from '../characters/Wingo'
 import { WingoSays } from '../characters/WingoSays'
 import { GameButton, Panel } from '../ui'
 
@@ -42,8 +42,18 @@ const SITUATION_LABEL: Record<WingoSituation, string> = {
   error: 'Fehler',
 }
 
-/** Kontexte für die Accessoire-Matrix. */
-const GEAR_CASES: { label: string; season: Jahreszeit; weather: Wetter | null; night?: boolean; mood?: WingoMood }[] = [
+/**
+ * Kontexte für die Accessoire-Matrix. Fest vorgegeben (Laterne explizit),
+ * unabhängig von der Studio-Szene oben.
+ */
+const GEAR_CASES: {
+  label: string
+  season: Jahreszeit
+  weather: Wetter | null
+  night?: boolean
+  lantern?: boolean
+  mood?: WingoMood
+}[] = [
   { label: 'Frühling · Kranz + Blüte', season: 'fruehling', weather: 'klar' },
   { label: 'Sommer · frisches Blatt', season: 'sommer', weather: 'klar' },
   { label: 'Herbst · rotes Blatt + Eichel', season: 'herbst', weather: 'bewoelkt' },
@@ -53,6 +63,8 @@ const GEAR_CASES: { label: string; season: Jahreszeit; weather: Wetter | null; n
   { label: 'Schnee · Schal', season: 'winter', weather: 'schnee', mood: 'happy' },
   { label: 'Frost · Schal', season: 'herbst', weather: 'frost' },
   { label: 'Wind · Zotteln wehen', season: 'sommer', weather: 'wind', mood: 'surprised' },
+  { label: 'Regenabend · Hut + Laterne', season: 'sommer', weather: 'regen', lantern: true, mood: 'happy' },
+  { label: 'Winterabend · Laterne', season: 'winter', weather: 'bewoelkt', lantern: true },
   { label: 'Nacht · Laterne', season: 'sommer', weather: 'klar', night: true },
   { label: 'Herbst-Nacht · Laterne', season: 'herbst', weather: 'nebel', night: true, mood: 'think' },
   { label: 'Winternacht · schläft', season: 'winter', weather: 'schnee', night: true, mood: 'sleep' },
@@ -69,7 +81,8 @@ export function CharacterStudio({ scene }: { scene: SceneInput }) {
   const [situation, setSituation] = useState<WingoSituation>('welcome')
   const [lineVariant, setLineVariant] = useState(0)
 
-  const gear = wingoGear(scene.season, scene.weather, night)
+  // Laterne wie im Spiel: Nacht/Dämmerung oder dunkler Abend (Szenen-Licht).
+  const gear = wingoGear(scene.season, scene.weather, night, sceneNeedsLantern(deriveScene(scene)))
   const gearList = [
     gear.hat && 'Südwester',
     gear.scarf && 'Schal',
@@ -149,8 +162,19 @@ export function CharacterStudio({ scene }: { scene: SceneInput }) {
         <div className="grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-4">
           {GEAR_CASES.map((g) => (
             <figure key={g.label} className="flex flex-col items-center gap-1">
-              <div className={`grid w-full place-items-center rounded-xl py-2 ${g.night ? 'bg-night' : 'bg-sky-light/60'}`}>
-                <Wingo mood={g.mood ?? 'idle'} size={136} season={g.season} weather={g.weather} night={g.night} />
+              <div
+                className={`grid w-full place-items-center rounded-xl py-2 ${
+                  g.night ? 'bg-night' : g.lantern ? 'bg-night-light' : 'bg-sky-light/60'
+                }`}
+              >
+                <Wingo
+                  mood={g.mood ?? 'idle'}
+                  size={136}
+                  season={g.season}
+                  weather={g.weather}
+                  night={g.night}
+                  lantern={g.lantern ?? !!g.night}
+                />
               </div>
               <figcaption className="text-center text-[12.5px] font-semibold leading-tight text-forest-900">{g.label}</figcaption>
             </figure>
@@ -166,7 +190,15 @@ export function CharacterStudio({ scene }: { scene: SceneInput }) {
             return (
               <figure key={m} className="flex flex-col items-center">
                 <div className="w-full max-w-[170px]">
-                  <Wingo mood={m} size={170} variant="peek" season={c.season} weather={c.weather} night={c.night} />
+                  <Wingo
+                    mood={m}
+                    size={170}
+                    variant="peek"
+                    season={c.season}
+                    weather={c.weather}
+                    night={c.night}
+                    lantern={c.lantern ?? !!c.night}
+                  />
                   <BoardEdge />
                 </div>
                 <figcaption className="mt-2 text-center text-[12px] text-muted">

@@ -139,7 +139,7 @@
 /* Sonne/Mond: Lage. Breitformat je Tageszeit (Inline --bx-wide/--by-wide aus
    BODY_POS), Hochformat (< 0,8) immer in der freien Ecke rechts oben
    (Inline --bx-tall/--by-tall aus BODY_POS_TALL) – dort kollidieren die Gestirne weder mit
-   Logo, Überschriften, Spieler-Tabs noch mit Wingo. */
+   Logo, Überschriften, Spieler-Tabs noch mit Wingo. Desktop ab 1024 px: siehe unten. */
 .sc-bodies {
   --bx: var(--bx-wide);
   --by: var(--by-wide);
@@ -157,7 +157,18 @@
     top: var(--ct-tall);
   }
 }
-/* Ältere Browser ohne Container-Queries: Hochformat am Bildschirm ablesen. */
+/* Desktop (Breitformat ab 1024 px = zweispaltiger Startbildschirm): Tagesbogen
+   über die freien Ränder und die Mitte ganz oben (Inline --bx-desk/--by-desk aus
+   BODY_POS_DESKTOP) – nicht hinter Logo, Sprechblasen, Ton-Knopf oder Wingo.
+   Scheibe höchstens 72 px, damit die Mittagssonne über der Spielbrett-Sprechblase bleibt. */
+@container (min-width: 1024px) and (min-aspect-ratio: 4 / 5) {
+  .sc-bodies {
+    --bx: var(--bx-desk);
+    --by: var(--by-desk);
+    --scx-disc: clamp(50px, min(15cqw, 8.5cqh), 72px);
+  }
+}
+/* Ältere Browser ohne Container-Queries: Format am Bildschirm ablesen. */
 @supports not (container-type: size) {
   @media (max-aspect-ratio: 4 / 5) {
     .sc-bodies {
@@ -166,6 +177,13 @@
     }
     .sc-cloud-row {
       top: var(--ct-tall);
+    }
+  }
+  @media (min-width: 1024px) and (min-aspect-ratio: 4 / 5) {
+    .sc-bodies {
+      --bx: var(--bx-desk);
+      --by: var(--by-desk);
+      --scx-disc: clamp(50px, min(15vw, 8.5vh), 72px);
     }
   }
 }
@@ -284,6 +302,23 @@
 .forest-scene.is-calm .sc-cloud-row,
 .forest-scene.is-calm .sc-bank,
 .forest-scene.is-calm .sc-fog-band {
+  animation-play-state: paused;
+}
+
+/* ── Sparmodus (perf-mode.ts, nur auf gemessen langsamen Geräten) ──────────
+   'steps': Die Farbüberblendung rechnet sonst in JEDEM Bild die Styles aller
+   SVG-Elemente neu (CPU-gedrosselt 4×: ≈ 30 fps beim Szenenwechsel). In 5 Stufen
+   bleibt die Dauer gleich, gerechnet wird aber nur 5-mal. 'lite' zusätzlich:
+   Bäume und Gräser wiegen nicht mehr (Wolken ziehen weiter). */
+.forest-scene[data-fx='steps'],
+.forest-scene[data-fx='lite'] {
+  transition-timing-function: steps(5, jump-end);
+}
+.forest-scene[data-fx='lite'] .sc-sway-mid,
+.forest-scene[data-fx='lite'] .sc-sway-grass,
+.forest-scene[data-fx='lite'] .sc-sway-front,
+.forest-scene[data-fx='lite'] .sc-rock-left,
+.forest-scene[data-fx='lite'] .sc-rock-right {
   animation-play-state: paused;
 }
 

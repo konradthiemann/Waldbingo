@@ -41,8 +41,15 @@ export const CALM_FACTOR = 0.35
 /**
  * Wie viele Partikel welcher Art? Basiswerte gelten für Handy-Fläche,
  * werden auf das Budget gedeckelt und dann mit der Fläche skaliert.
+ * `budget` < 1 dünnt zusätzlich aus (Sparmodus, perf-mode.ts).
  */
-export function particlePlan(s: ParticleScene, width: number, height: number, calm = false): ParticleSpec[] {
+export function particlePlan(
+  s: ParticleScene,
+  width: number,
+  height: number,
+  calm = false,
+  budget = 1,
+): ParticleSpec[] {
   const want: ParticleSpec[] = []
   if (s.precipitation === 'rain') want.push({ kind: 'rain', count: 34 + 50 * s.precipIntensity })
   if (s.precipitation === 'snow') want.push({ kind: 'snow', count: 32 + 46 * s.precipIntensity })
@@ -55,9 +62,9 @@ export function particlePlan(s: ParticleScene, width: number, height: number, ca
   if (s.wind > 0.6) want.push({ kind: 'gust', count: 4 })
 
   const total = want.reduce((n, p) => n + p.count, 0)
-  const budget = total > PHONE_BUDGET ? PHONE_BUDGET / total : 1
+  const fit = total > PHONE_BUDGET ? PHONE_BUDGET / total : 1
   const area = Math.min(MAX_AREA_FACTOR, Math.max(0.15, (Math.max(0, width) * Math.max(0, height)) / PHONE_AREA))
-  const k = budget * area * (calm ? CALM_FACTOR : 1)
+  const k = fit * area * (calm ? CALM_FACTOR : 1) * Math.max(0, Math.min(1, budget))
   return want
     .map((p) => ({ kind: p.kind, count: Math.max(1, Math.round(p.count * k)) }))
     .filter((p) => width > 0 && height > 0 && p.count > 0)
@@ -122,6 +129,10 @@ export class ParticleEngine {
   private scene: ParticleScene | null = null
   private colors: ParticleColors = { leaves: ['#e8892f'], petals: ['#ffc4d8'] }
   private calm = false
+  /** Partikel-Budget 0 … 1 (Sparmodus). */
+  private budget = 1
+  /** Optional: Bildabstand (ms) jedes gezeichneten Bilds – für die Sparmodus-Messung. */
+  onFrame: ((dtMs: number) => void) | null = null
   private raf = 0
   private last = 0
   private t = 0
@@ -157,10 +168,11 @@ export class ParticleEngine {
     this.wake()
   }
 
-  setScene(scene: ParticleScene, colors: ParticleColors, calm: boolean): void {
+  setScene(scene: ParticleScene, colors: ParticleColors, calm: boolean, budget = 1): void {
     this.scene = scene
     this.colors = colors
     this.calm = calm
+    this.budget = budget
     for (const p of this.parts) {
       if (p.kind === 'leaf') p.color = this.pick(colors.leaves)
       if (p.kind === 'petal') p.color = this.pick(colors.petals)
@@ -208,6 +220,7 @@ export class ParticleEngine {
     this.last = performance.now()
     const frame = (now: number) => {
       if (!this.running) return
+      this.onFrame?.(now - this.last)
       const dt = Math.min(0.05, Math.max(0, (now - this.last) / 1000))
       this.last = now
       this.step(dt)
@@ -249,7 +262,7 @@ export class ParticleEngine {
       this.parts = []
       return
     }
-    const plan = particlePlan(this.scene, this.w, this.h, this.calm)
+    const plan = particlePlan(this.scene, this.w, this.h, this.calm, this.budget)
     const next: Particle[] = []
     for (const spec of plan) {
       const have = this.parts.filter((p) => p.kind === spec.kind)

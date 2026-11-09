@@ -31,6 +31,15 @@ describe('particlePlan – Budget & Skalierung', () => {
     expect(calm).toBeLessThanOrEqual(Math.ceil(normal * CALM_FACTOR) + 2)
   })
 
+  it('Sparmodus-Budget dünnt aus, jede Art bleibt sichtbar', () => {
+    const s = deriveScene({ season: 'herbst', weather: 'regen', time: 'abend' })
+    const full = particlePlan(s, 390, 844)
+    const lite = particlePlan(s, 390, 844, false, 0.5)
+    expect(total(lite)).toBeLessThanOrEqual(Math.ceil(total(full) * 0.5) + 2)
+    expect(lite.map((p) => p.kind)).toEqual(full.map((p) => p.kind))
+    for (const p of lite) expect(p.count).toBeGreaterThan(0)
+  })
+
   it('leere Fläche → keine Partikel', () => {
     const s = deriveScene({ season: 'sommer', weather: 'regen', time: 'tag' })
     expect(particlePlan(s, 0, 0)).toEqual([])

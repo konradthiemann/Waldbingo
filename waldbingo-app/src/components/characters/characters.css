@@ -350,6 +350,14 @@
 
 /* ── Abschalten ────────────────────────────────────────────────── */
 
+/* Sparmodus (scene/perf-mode.ts, nur auf gemessen sehr langsamen Geräten):
+   Atmen aus – es zeichnet die ganze Figur in jedem Bild neu. Blinzeln und
+   Gesten bleiben. */
+.wg-lite .wg-breathe,
+.wg-lite .wg-breathe-slow {
+  animation: none;
+}
+
 .wg-still,
 .wg-still * {
   animation: none !important;

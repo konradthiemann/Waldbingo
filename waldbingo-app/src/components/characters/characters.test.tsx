@@ -1,7 +1,10 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
+import type { Jahreszeit, Tageszeit, Wetter } from '../../data/types'
+import { deriveScene } from '../../lib/scene'
+import { SceneProvider } from '../scene/scene-context'
 import { FRIEND_MOODS, FRIEND_ORDER, Friend, PlayerAvatar, playerName } from './Friends'
-import { WINGO_MOODS, Wingo, wingoGear } from './Wingo'
+import { sceneNeedsLantern, WINGO_MOODS, Wingo, wingoGear } from './Wingo'
 import { WingoSays } from './WingoSays'
 
 /** Alle definierten IDs und alle url(#…)-Verweise einer Markup-Zeichenkette. */
@@ -74,6 +77,59 @@ describe('Wingo', () => {
     expect(wingoGear('fruehling', 'klar')).toMatchObject({ wreath: true })
     expect(wingoGear('sommer', 'wind')).toMatchObject({ windy: true })
     expect(wingoGear()).toMatchObject({ hat: false, scarf: false, lantern: false, sprout: 'leaf' })
+  })
+
+  it('hält Eichel und Laterne auseinander (gleiche Hand)', () => {
+    expect(wingoGear('herbst', 'klar', false, true)).toMatchObject({ acorn: false, lantern: true })
+    expect(wingoGear('herbst', 'klar', true, false)).toMatchObject({ acorn: false, lantern: false })
+    expect(wingoGear('sommer', 'regen', false, true)).toMatchObject({ hat: true, lantern: true })
+  })
+
+  it('packt die Laterne in Dämmerung, Nacht und an dunklen Abenden aus', () => {
+    const needs = (season: Jahreszeit, weather: Wetter | null, time: Tageszeit) =>
+      sceneNeedsLantern(deriveScene({ season, weather, time }))
+    // Dämmerung und Nacht: immer
+    for (const w of ['klar', 'regen', null] as const) {
+      expect(needs('sommer', w, 'daemmerung')).toBe(true)
+      expect(needs('sommer', w, 'nacht')).toBe(true)
+    }
+    // Abend unter Wolken, Nebel, Schnee, Regen: dämmrig → Laterne
+    for (const w of ['bewoelkt', 'regen', 'schnee', 'nebel'] as const) expect(needs('sommer', w, 'abend'), w).toBe(true)
+    // heller Sommer-/Frühlings-/Herbstabend: keine Laterne
+    for (const s of ['fruehling', 'sommer', 'herbst'] as const) {
+      for (const w of ['klar', 'wind', 'nach_regen', 'frost', null] as const) expect(needs(s, w, 'abend'), `${s}/${w}`).toBe(false)
+    }
+    // Winterabend: früh dunkel, auch bei klarem Himmel
+    for (const w of ['klar', 'frost', 'wind', null] as const) expect(needs('winter', w, 'abend'), String(w)).toBe(true)
+    // tagsüber und morgens nie
+    for (const s of ['fruehling', 'sommer', 'herbst', 'winter'] as const) {
+      for (const w of ['klar', 'regen', 'schnee', 'nebel'] as const) {
+        expect(needs(s, w, 'tag')).toBe(false)
+        expect(needs(s, w, 'morgen')).toBe(false)
+      }
+    }
+  })
+
+  it('liest die Laterne aus der aktuellen Szene, wenn keine Prop gesetzt ist', () => {
+    const lantern = (html: string) => html.includes('#ffb347')
+    const at = (season: Jahreszeit, weather: Wetter, time: Tageszeit, el: JSX.Element) =>
+      renderToStaticMarkup(<SceneProvider value={deriveScene({ season, weather, time })}>{el}</SceneProvider>)
+    // ohne Provider: wie bisher nur über `night`
+    expect(lantern(renderToStaticMarkup(<Wingo season="sommer" weather="regen" />))).toBe(false)
+    expect(lantern(renderToStaticMarkup(<Wingo night />))).toBe(true)
+    // dunkler Abend aus dem Context – auch wenn der Aufrufer night={false} übergibt
+    expect(lantern(at('sommer', 'regen', 'abend', <Wingo season="sommer" weather="regen" night={false} />))).toBe(true)
+    expect(lantern(at('winter', 'klar', 'abend', <Wingo variant="peek" night={false} />))).toBe(true)
+    // heller Sommerabend: keine Laterne
+    expect(lantern(at('sommer', 'klar', 'abend', <Wingo season="sommer" night={false} />))).toBe(false)
+    // explizite Prop gewinnt in beide Richtungen
+    expect(lantern(at('winter', 'schnee', 'nacht', <Wingo lantern={false} />))).toBe(false)
+    expect(lantern(at('sommer', 'klar', 'tag', <Wingo lantern />))).toBe(true)
+    // Herbstabend mit Laterne: keine Eichel in derselben Hand
+    const autumn = at('herbst', 'regen', 'abend', <Wingo season="herbst" weather="regen" night={false} size={200} />)
+    expect(lantern(autumn)).toBe(true)
+    expect(autumn).not.toContain('#d79a52')
+    expect(renderToStaticMarkup(<Wingo season="herbst" size={200} />)).toContain('#d79a52')
   })
 
   it('zeigt die Blatt-Flecken je Größe lesbar: klein höchstens 3 große, groß 5 mit Mittelader', () => {

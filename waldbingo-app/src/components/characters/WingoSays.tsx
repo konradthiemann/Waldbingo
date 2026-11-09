@@ -15,6 +15,8 @@ interface Props {
   season?: Jahreszeit
   weather?: Wetter | null
   night?: boolean
+  /** Erweiterung: Laterne explizit an/aus (sonst wie bei `Wingo`: Nacht oder dunkle Szene). */
+  lantern?: boolean
   /**
    * Wingo links (Blase rechts) oder rechts (Blase links).
    * Erweiterung: 'top' = Blase über Wingo (zentriert, z. B. Startbildschirm).
@@ -52,6 +54,7 @@ export function WingoSays({
   season,
   weather,
   night,
+  lantern,
   side = 'left',
   className = '',
   speakKey,
@@ -93,6 +96,7 @@ export function WingoSays({
       season={season}
       weather={weather}
       night={night}
+      lantern={lantern}
       title=""
       variant={variant}
       talking={talking}

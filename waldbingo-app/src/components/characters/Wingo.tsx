@@ -9,6 +9,9 @@
 // Alle IDs (ClipPath, Mask, Gradient) sind pro Instanz eindeutig (useId).
 import { type CSSProperties, type ReactNode, useId } from 'react'
 import type { Jahreszeit, Wetter } from '../../data/types'
+import type { SceneState } from '../../lib/scene'
+import { useFxLevel } from '../scene/perf-mode'
+import { useCurrentScene } from '../scene/scene-context'
 import './characters.css'
 
 export type WingoMood =
@@ -31,8 +34,15 @@ export interface WingoProps {
   season?: Jahreszeit
   /** Wetter → Accessoire (Regenhut, Schal bei Frost/Schnee, …). */
   weather?: Wetter | null
-  /** Nacht/Dämmerung → Laterne. */
+  /** Nacht/Dämmerung → Laterne (und keine Eichel). */
   night?: boolean
+  /**
+   * Erweiterung: Laterne explizit an/aus (Studio, Tests). Ohne Angabe trägt
+   * Wingo sie bei `night` – oder sobald die aktuelle Szene aus dem
+   * `SceneProvider` dunkel genug ist (`sceneNeedsLantern`, z. B. Regen- oder
+   * Winterabend).
+   */
+  lantern?: boolean
   /**
    * 'full' = ganze Figur. 'peek' = nur Oberkörper mit Händen auf einer Kante
    * (zum „Drüberschauen“ über das Spielbrett); untere Hälfte ist abgeschnitten.
@@ -83,18 +93,27 @@ export interface WingoGear {
   wreath: boolean
   /** Was am Hörnchen sprießt. */
   sprout: 'bloom' | 'leaf' | 'redLeaf' | 'none'
-  /** Eichel in der Hand (Herbst, tagsüber). */
+  /** Eichel in der Hand (Herbst, tagsüber; nie zusammen mit der Laterne – gleiche Hand). */
   acorn: boolean
-  /** Laterne mit warmem Glühen (Nacht/Dämmerung). */
+  /** Laterne mit warmem Glühen (Nacht/Dämmerung, dunkle Abende). */
   lantern: boolean
   /** Fell-Zotteln wehen (Wind). */
   windy: boolean
 }
 
-/** Leitet die Accessoires aus dem Kontext ab (auch fürs Studio nutzbar). */
-export function wingoGear(season?: Jahreszeit, weather?: Wetter | null, night?: boolean): WingoGear {
+/**
+ * Leitet die Accessoires aus dem Kontext ab (auch fürs Studio nutzbar).
+ * `lantern` überschreibt die Laterne (Standard: = `night`).
+ */
+export function wingoGear(
+  season?: Jahreszeit,
+  weather?: Wetter | null,
+  night?: boolean,
+  lantern?: boolean,
+): WingoGear {
   const hat = weather === 'regen'
   const scarf = weather === 'schnee' || weather === 'frost'
+  const light = lantern ?? !!night
   return {
     hat,
     scarf,
@@ -102,10 +121,32 @@ export function wingoGear(season?: Jahreszeit, weather?: Wetter | null, night?: 
     wreath: season === 'fruehling' && !hat,
     sprout:
       season === 'fruehling' ? 'bloom' : season === 'herbst' ? 'redLeaf' : season === 'winter' ? 'none' : 'leaf',
-    acorn: season === 'herbst' && !night,
-    lantern: !!night,
+    acorn: season === 'herbst' && !night && !light,
+    lantern: light,
     windy: weather === 'wind',
   }
+}
+
+/**
+ * Ab welchem Umgebungslicht Wingo die Laterne auspackt (Maßstab: `SceneState.daylight`,
+ * 0 = Nacht … 1 = Mittag). Per Screenshot-Matrix aller Abende bestimmt: klare,
+ * windige und Nach-Regen-Abende (≥ 0,57) leuchten golden, unter Wolken, Nebel,
+ * Schnee und Regen (≤ 0,56) wird der Abend grau und dämmrig.
+ */
+export const LANTERN_BELOW = 0.565
+
+/**
+ * Wie viel dunkler ein Abend (17–20 Uhr) je Jahreszeit draußen wirklich ist:
+ * Im Winter geht die Sonne schon gegen halb fünf unter. Die Szene selbst malt
+ * den Abend in jeder Jahreszeit gleich hell – das Licht für die Laterne nicht.
+ */
+const EVENING_DARKNESS: Record<Jahreszeit, number> = { fruehling: 0, sommer: 0, herbst: 0, winter: 0.15 }
+
+/** Braucht Wingo in dieser Szene seine Laterne? Dämmerung/Nacht immer, abends je nach Licht. */
+export function sceneNeedsLantern(scene: Pick<SceneState, 'isNight' | 'time' | 'season' | 'daylight'>): boolean {
+  if (scene.isNight) return true
+  const evening = scene.time === 'abend' ? EVENING_DARKNESS[scene.season] : 0
+  return scene.daylight - evening < LANTERN_BELOW
 }
 
 // ── Geometrie ──────────────────────────────────────────────────────────────
@@ -213,6 +254,7 @@ export function Wingo({
   season,
   weather,
   night,
+  lantern,
   variant = 'full',
   animated = true,
   talking = false,
@@ -221,7 +263,12 @@ export function Wingo({
 }: WingoProps) {
   const uid = 'wg' + useId().replace(/[^a-zA-Z0-9]/g, '')
   const deco = title === ''
-  const gear = wingoGear(season, weather, night)
+  // Laterne: explizit gesetzt > Nacht-Flag > Licht der aktuellen Szene (Context).
+  const scene = useCurrentScene()
+  const gear = wingoGear(season, weather, night, lantern ?? (!!night || (scene != null && sceneNeedsLantern(scene))))
+  // Sparmodus (sehr langsames Gerät, perf-mode.ts): Atmen pausiert – es zeichnet
+  // die ganze Figur in jedem Bild neu (SVG-intern, nicht vom Compositor).
+  const lite = useFxLevel() === 'lite'
   const peek = variant === 'peek'
   const face = variant === 'face'
 
@@ -317,7 +364,7 @@ export function Wingo({
       viewBox={viewBox}
       width={size}
       height={height}
-      className={`wg-root ${animated ? '' : 'wg-still'} ${className}`}
+      className={`wg-root ${animated ? '' : 'wg-still'} ${lite ? 'wg-lite' : ''} ${className}`}
       role={deco ? undefined : 'img'}
       aria-hidden={deco ? true : undefined}
       aria-label={deco ? undefined : title}

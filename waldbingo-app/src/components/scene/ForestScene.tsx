@@ -2,9 +2,10 @@
 // Inline-SVG-Landschaft + EIN Partikel-Canvas, vollständig aus `SceneState`
 // gesteuert. Farben laufen über die --sc-* CSS-Variablen und blenden beim
 // Szenenwechsel weich über (scene.css registriert sie als <color>).
-import { type CSSProperties, memo, useId, useMemo } from 'react'
-import { type SceneState, sceneCssVars } from '../../lib/scene'
+import { type CSSProperties, memo, useEffect, useId, useMemo, useRef } from 'react'
+import { type SceneState, sceneCssVars, sceneKey } from '../../lib/scene'
 import { ParticleCanvas } from './ParticleCanvas'
+import { useFxLevel, watchSceneChange } from './perf-mode'
 import { sceneMixVars } from './scene-mixes'
 import { defIds, SceneDefs } from './SceneDefs'
 import { FarLayer, FogBand, FrameLeft, FrameRight, FrontLayer, GrassEdge, GrassFront, MidLayer } from './SceneLand'
@@ -39,17 +40,29 @@ export function ForestScene({ scene, calm = false, contained = false }: Props) {
     () => ({ ...sceneCssVars(scene), ...sceneMixVars(scene.palette) }) as CSSProperties,
     [scene],
   )
+  // Sparmodus (perf-mode.ts): misst Szenenwechsel der Hintergrund-Szene; scene.css
+  // blendet ab Stufe 'steps' in wenigen Stufen über, 'lite' hält Idle-Loops an.
+  const fx = useFxLevel()
+  const key = sceneKey(scene)
+  const prevKey = useRef(key)
+  useEffect(() => {
+    if (prevKey.current === key) return
+    prevKey.current = key
+    if (contained) return
+    return watchSceneChange()
+  }, [key, contained])
   return (
     <div
       aria-hidden="true"
       data-scene={`${scene.season}-${scene.weather ?? 'unbekannt'}-${scene.time}`}
+      data-fx={fx === 'full' ? undefined : fx}
       className={`forest-scene no-print print:hidden pointer-events-none ${
         contained ? 'absolute' : 'fixed'
       } inset-0 z-0 overflow-hidden ${calm ? 'is-calm' : ''}`}
       style={vars}
     >
       <SceneArt uid={uid} scene={scene} />
-      <ParticleCanvas scene={scene} calm={calm} />
+      <ParticleCanvas scene={scene} calm={calm} measure={!contained} />
       {/* Dunst-Schleier (Nebel, Regenstimmung) über allem */}
       <div className="sc-haze absolute inset-0" />
     </div>
