@@ -12,6 +12,7 @@ import { PrintSheet } from './components/print/PrintSheet'
 import { ForestScene } from './components/scene/ForestScene'
 import { ShareModal } from './components/share/ShareModal'
 import { useOnline } from './hooks/useOnline'
+import { useHaptics } from './hooks/useHaptics'
 import { useSound } from './hooks/useSound'
 import type { SpielKontext } from './data/types'
 import { loadGame, loadSettings, saveGame } from './lib/db'
@@ -38,6 +39,7 @@ const DEPTH: Record<Screen, number> = { title: 0, plan: 1, join: 1, game: 2 }
 export default function App() {
   const online = useOnline()
   const { soundOn, toggleSound } = useSound()
+  const { hapticsOn, toggleHaptics, available: hapticsAvailable } = useHaptics()
 
   // ── Navigation ───────────────────────────────────────────────────────────
   // Beim Öffnen immer Startbildschirm; eine Einladung aus der URL hat Vorrang.
@@ -350,6 +352,9 @@ export default function App() {
           online={online}
           soundOn={soundOn}
           onToggleSound={toggleSound}
+          hapticsOn={hapticsOn}
+          hapticsAvailable={hapticsAvailable}
+          onToggleHaptics={toggleHaptics}
         />
 
         {/* Bildschirm bleibt bei offenem Rechtlichem eingehängt (nur ausgeblendet). */}

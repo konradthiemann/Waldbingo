@@ -3,7 +3,7 @@
 // Holz-Klötzchen, Marimba und kleine Glöckchen, leise und nie schrill.
 //
 // Vertrag (stabil): playSfx / haptic / setSoundEnabled / isSoundEnabled /
-// SfxName / HapticName. Alle Aufrufe sind gefahrlos: ohne WebAudio, vor der
+// setHapticsEnabled / isHapticsEnabled / canVibrate / SfxName / HapticName. Alle Aufrufe sind gefahrlos: ohne WebAudio, vor der
 // ersten Nutzerinteraktion oder bei Fehlern passiert einfach nichts.
 
 export type SfxName =
@@ -290,10 +290,26 @@ const HAPTICS: Record<HapticName, number | number[]> = {
   celebrate: [24, 60, 24, 60, 60],
 }
 
-/** Kurze Vibration (falls vom Gerät unterstützt). */
+let hapticsEnabled = true
+
+/** Vibration an/aus – unabhängig vom Ton (eigener HUD-Schalter). */
+export function setHapticsEnabled(on: boolean): void {
+  hapticsEnabled = on
+}
+
+export function isHapticsEnabled(): boolean {
+  return hapticsEnabled
+}
+
+/** Kann das Gerät vibrieren? (iOS-Safari kennt navigator.vibrate nicht.) */
+export function canVibrate(): boolean {
+  return typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function'
+}
+
+/** Kurze Vibration (falls vom Gerät unterstützt und nicht ausgeschaltet). */
 export function haptic(name: HapticName): void {
   try {
-    if (typeof navigator === 'undefined' || typeof navigator.vibrate !== 'function') return
+    if (!hapticsEnabled || !canVibrate()) return
     if (!hasUserActivation()) return
     navigator.vibrate(HAPTICS[name])
   } catch {

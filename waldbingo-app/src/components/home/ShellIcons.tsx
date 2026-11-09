@@ -33,6 +33,26 @@ export function SoundOffIcon({ size = 22, className }: IconProps) {
   )
 }
 
+/** Handy mit Vibrationswellen. */
+export function VibrateOnIcon({ size = 22, className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} className={className} aria-hidden="true">
+      <rect x="8" y="4" width="8" height="16" rx="2.2" fill="none" stroke="currentColor" strokeWidth={2.2} />
+      <path {...base} d="M4.6 9v6M2.4 10.5v3M19.4 9v6M21.6 10.5v3" />
+    </svg>
+  )
+}
+
+/** Handy ohne Vibration (durchgestrichen). */
+export function VibrateOffIcon({ size = 22, className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} className={className} aria-hidden="true">
+      <rect x="8" y="4" width="8" height="16" rx="2.2" fill="none" stroke="currentColor" strokeWidth={2.2} />
+      <path {...base} d="M4 4l16 16" />
+    </svg>
+  )
+}
+
 export function BackIcon({ size = 22, className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} className={className} aria-hidden="true">

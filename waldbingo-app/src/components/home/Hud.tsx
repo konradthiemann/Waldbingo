@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useScrolled } from '../../hooks/useScrolled'
 import { Wingo } from '../characters/Wingo'
 import { IconButton } from '../ui'
-import { CloudOffIcon, SoundOffIcon, SoundOnIcon } from './ShellIcons'
+import { CloudOffIcon, SoundOffIcon, SoundOnIcon, VibrateOffIcon, VibrateOnIcon } from './ShellIcons'
 
 interface Props {
   /** Kleines Logo links zeigen (nicht auf dem Startbildschirm – dort ist das große Logo). */
@@ -11,13 +11,26 @@ interface Props {
   online: boolean
   soundOn: boolean
   onToggleSound: () => void
+  /** Vibrations-Schalter – nur auf Geräten mit Vibration (`hapticsAvailable`). */
+  hapticsOn: boolean
+  hapticsAvailable: boolean
+  onToggleHaptics: () => void
 }
 
 /**
  * Schlanke HUD-Leiste über der Szene: Logo (→ Startbildschirm), Offline-Plakette,
- * Ton an/aus. Durchsichtig am Seitenanfang, beim Scrollen weiches Milchglas.
+ * Vibration an/aus (nur wo vorhanden), Ton an/aus. Durchsichtig am Seitenanfang, beim Scrollen weiches Milchglas.
  */
-export function Hud({ showLogo, onHome, online, soundOn, onToggleSound }: Props) {
+export function Hud({
+  showLogo,
+  onHome,
+  online,
+  soundOn,
+  onToggleSound,
+  hapticsOn,
+  hapticsAvailable,
+  onToggleHaptics,
+}: Props) {
   const scrolled = useScrolled()
   return (
     <header
@@ -47,6 +60,17 @@ export function Hud({ showLogo, onHome, online, soundOn, onToggleSound }: Props)
           {!online && <OfflineBadge />}
           {/* Umschalter: feste Beschriftung + aria-pressed (WAI-ARIA), der
               Tooltip sagt, was ein Tipp bewirkt. */}
+          {hapticsAvailable && (
+            <IconButton
+              tone="glass"
+              label="Vibration"
+              title={hapticsOn ? 'Vibration ausschalten' : 'Vibration einschalten'}
+              aria-pressed={hapticsOn}
+              onClick={onToggleHaptics}
+            >
+              {hapticsOn ? <VibrateOnIcon /> : <VibrateOffIcon className="opacity-70" />}
+            </IconButton>
+          )}
           <IconButton
             tone="glass"
             label="Ton"
@@ -90,10 +114,11 @@ function OfflineBadge() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="focus-ring inline-flex h-11 items-center gap-1.5 rounded-full border border-sun-dark/40 bg-sun-light/90 px-3.5 font-display text-[14px] font-semibold text-wood-lip shadow-[0_3px_0_rgba(185,134,26,.45),0_6px_14px_rgba(15,38,23,.16)] backdrop-blur-md transition active:translate-y-px"
+        aria-label="Offline"
+        className="focus-ring inline-flex h-11 items-center gap-1.5 rounded-full border border-sun-dark/40 bg-sun-light/90 px-3 min-[400px]:px-3.5 font-display text-[14px] font-semibold text-wood-lip shadow-[0_3px_0_rgba(185,134,26,.45),0_6px_14px_rgba(15,38,23,.16)] backdrop-blur-md transition active:translate-y-px"
       >
         <CloudOffIcon size={18} />
-        Offline
+        <span className="hidden min-[400px]:inline">Offline</span>
       </button>
       {open && (
         <div

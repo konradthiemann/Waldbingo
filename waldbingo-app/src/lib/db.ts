@@ -45,6 +45,8 @@ export interface Settings {
   liveDisabled?: boolean
   /** Ton an/aus (HUD-Schalter). Fehlt ⇒ an. */
   soundOn?: boolean
+  /** Vibration an/aus (HUD-Schalter, nur auf Geräten mit Vibration). Fehlt ⇒ an. */
+  hapticsOn?: boolean
 }
 
 class WaldbingoDB extends Dexie {

@@ -1,5 +1,14 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { haptic, isSoundEnabled, playSfx, setSoundEnabled, type SfxName } from './sfx'
+import {
+  canVibrate,
+  haptic,
+  isHapticsEnabled,
+  isSoundEnabled,
+  playSfx,
+  setHapticsEnabled,
+  setSoundEnabled,
+  type SfxName,
+} from './sfx'
 
 const ALL: SfxName[] = ['tap', 'open', 'close', 'found', 'unfound', 'almost', 'bingo', 'full', 'whoosh']
 
@@ -44,5 +53,18 @@ describe('sfx – Vertrag & Fehlertoleranz', () => {
       configurable: true,
     })
     expect(() => haptic('celebrate')).not.toThrow()
+  })
+
+  it('vibriert nicht, wenn die Vibration ausgeschaltet ist', () => {
+    const vibrate = vi.fn(() => true)
+    Object.defineProperty(navigator, 'vibrate', { value: vibrate, configurable: true })
+    expect(canVibrate()).toBe(true)
+    setHapticsEnabled(false)
+    expect(isHapticsEnabled()).toBe(false)
+    haptic('success')
+    expect(vibrate).not.toHaveBeenCalled()
+    setHapticsEnabled(true)
+    haptic('light')
+    expect(vibrate).toHaveBeenCalledTimes(1)
   })
 })
