@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { Jahreszeit, WaldObjekt, Wetter } from '../../data/types'
+import { useOnline } from '../../hooks/useOnline'
 import { classifyImage, loadModel, matchesObject, type ClassifyResult } from '../../lib/classifier'
 import { catColor } from '../../lib/categories'
-import { Wingo } from '../characters/Wingo'
-import { GameButton, Modal, SpeechBubble } from '../ui'
+import { photoSituation, wingoLine, wingoMood } from '../../lib/wingo-lines'
+import { WingoSays } from '../characters/WingoSays'
+import { GameButton, Modal } from '../ui'
 import './game.css'
 import { CameraIcon, CheckIcon } from './icons'
 
@@ -38,6 +40,7 @@ export function PhotoVerify({ canvas, target, onConfirm, onRetry, onCancel, seas
   const [confidence, setConfidence] = useState(0)
   const [matchLabel, setMatchLabel] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const online = useOnline()
 
   useEffect(() => {
     let cancelled = false
@@ -72,11 +75,96 @@ export function PhotoVerify({ canvas, target, onConfirm, onRetry, onCancel, seas
     }
   }, [canvas, target])
 
+  // Foto nur einmal pro Aufnahme kodieren (nicht bei jedem Render).
+  const photoUrl = useMemo(() => canvas.toDataURL('image/jpeg', 0.85), [canvas])
+
+  return (
+    <PhotoVerifyView
+      photoUrl={photoUrl}
+      target={target}
+      state={{ phase, results, matched, confidence, matchLabel, error }}
+      offline={!online}
+      season={season}
+      weather={weather}
+      night={night}
+      onConfirm={onConfirm}
+      onRetry={onRetry}
+      onCancel={onCancel}
+    />
+  )
+}
+
+/** Zustand der Erkennung, wie ihn `PhotoVerify` ermittelt. */
+export interface PhotoVerifyState {
+  phase: Phase
+  results: ClassifyResult[]
+  matched: boolean
+  confidence: number
+  matchLabel: string
+  error: string | null
+}
+
+interface ViewProps extends Omit<Props, 'canvas'> {
+  /** Foto als Bild-URL (Data-URL des Canvas). */
+  photoUrl: string
+  state: PhotoVerifyState
+  /** Browser offline? (Wingo erklärt dann, warum die Lupe fehlt.) */
+  offline?: boolean
+  /** Feste Spruch-Variante für die Wartezeit (Studio); Standard: zufällig pro Öffnen. */
+  lineVariant?: number
+}
+
+/**
+ * Anderer Wald-Fund, den die Erkennung „eher“ sieht. Gleiche Schwelle wie
+ * `matchesObject` (Standard 8 %) – nur für Wingos Kommentar, ändert nichts
+ * am Ergebnis oder an den Knöpfen.
+ */
+const GUESS_MIN = 0.08
+
+/**
+ * Reine Darstellung der Foto-Prüfung (ohne Kamera/Modell). Wird von
+ * `PhotoVerify` benutzt und im Studio mit vorgegebenem Ergebnis gezeigt.
+ */
+export function PhotoVerifyView({
+  photoUrl,
+  target,
+  state,
+  offline = false,
+  lineVariant,
+  onConfirm,
+  onRetry,
+  onCancel,
+  season,
+  weather,
+  night,
+}: ViewProps) {
+  const { phase, results, matched, confidence, matchLabel, error } = state
+  const [randomVariant] = useState(() => Math.floor(Math.random() * 1000))
+
   const col = catColor(target.kategorie)
   const pct = Math.round(confidence * 100)
-  const photoUrl = canvas.toDataURL('image/jpeg', 0.85)
   const busy = phase !== 'result'
-  const mood = busy ? 'think' : error ? 'sad' : matched ? 'cheer' : 'surprised'
+
+  // Wingos Kommentar: Situation aus dem Zustand, Kontext = gesuchtes Feld.
+  const guess =
+    phase === 'result' && !error && !matched
+      ? (results.find((r) => r.kategorie && r.kategorie !== target.kategorie && r.probability >= GUESS_MIN)
+          ?.kategorie ?? null)
+      : null
+  const situation = photoSituation({ phase, error: !!error, offline, matched, guess })
+  // Ergebnis: immer die passendste Zeile (Variante 0); Wartezeit: etwas Abwechslung.
+  const line = wingoLine(
+    situation,
+    {
+      season,
+      weather,
+      time: night ? 'nacht' : undefined,
+      thing: target.name,
+      kind: target.kategorie,
+      guess: guess ?? undefined,
+    },
+    busy ? (lineVariant ?? randomVariant) : 0,
+  )
 
   return (
     <Modal onClose={onCancel} label={`Foto-Erkennung: ${target.name}`} size="sm" closeOnBackdrop={false}>
@@ -104,18 +192,16 @@ export function PhotoVerify({ canvas, target, onConfirm, onRetry, onCancel, seas
       </div>
 
       {/* Wingo begleitet die Erkennung */}
-      <div className="mt-3 flex items-center gap-2">
-        <div className={`flex-none ${busy ? 'anim-bob' : ''}`}>
-          <Wingo mood={mood} size={88} season={season} weather={weather} night={night} title="" />
-        </div>
-        <SpeechBubble tail="left" className="min-w-0 flex-1">
-          {phase === 'loading-model' && 'Ich hole meine Lupe … einen Moment!'}
-          {phase === 'classifying' && 'Ich schaue mir dein Foto ganz genau an …'}
-          {phase === 'result' && error && 'Hoppla, das hat nicht geklappt. Du kannst es trotzdem abhaken!'}
-          {phase === 'result' && !error && matched && `Das sieht nach ${target.kategorie} aus. Super Foto!`}
-          {phase === 'result' && !error && !matched && 'Hmm, da bin ich nicht ganz sicher …'}
-        </SpeechBubble>
-      </div>
+      <WingoSays
+        mood={wingoMood(situation)}
+        size={88}
+        season={season}
+        weather={weather}
+        night={night}
+        className="mt-3"
+      >
+        {line}
+      </WingoSays>
 
       {/* Status */}
       {busy && (
@@ -152,7 +238,7 @@ export function PhotoVerify({ canvas, target, onConfirm, onRetry, onCancel, seas
               <div className="font-display text-[16px] font-semibold text-wood-dark">Nicht sicher erkannt</div>
               <p className="mt-1 text-[13.5px] text-ink">
                 {results.length > 0 && results[0].className
-                  ? `Das Modell erkennt eher „${results[0].className}" (${Math.round(results[0].probability * 100)}%).`
+                  ? `Das Modell erkennt eher „${results[0].className}“ (${Math.round(results[0].probability * 100)}%).`
                   : 'Das Modell konnte das Objekt nicht zuordnen.'}{' '}
                 Du kannst es trotzdem als gefunden markieren.
               </p>
@@ -209,12 +295,18 @@ export function PhotoVerify({ canvas, target, onConfirm, onRetry, onCancel, seas
         </>
       )}
 
-      {/* Fehler */}
+      {/* Fehler (ohne Netz: verständliche Erklärung statt technischer Meldung) */}
       {phase === 'result' && error && (
         <>
           <div className="mt-4 rounded-[18px] border-2 border-berry-light bg-[#fff0f2] px-4 py-3">
-            <p className="font-display text-[15px] font-semibold text-berry-dark">Erkennung fehlgeschlagen</p>
-            <p className="mt-1 text-[13px] text-berry-dark/90">{error}</p>
+            <p className="font-display text-[15px] font-semibold text-berry-dark">
+              {offline ? 'Kein Internet' : 'Erkennung fehlgeschlagen'}
+            </p>
+            <p className="mt-1 text-[13px] text-berry-dark/90">
+              {offline
+                ? 'Die Foto-Erkennung braucht Internet, um ihr Modell zu laden. Du kannst das Feld trotzdem abhaken.'
+                : error}
+            </p>
           </div>
           <div className="mt-4 flex flex-col gap-2.5">
             <GameButton variant="primary" size="lg" block icon={<CheckIcon size={22} />} onClick={onConfirm}>

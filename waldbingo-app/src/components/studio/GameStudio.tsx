@@ -1,9 +1,13 @@
 // Studio-Abschnitt „Spielbrett“: Live-Vorschau mit echtem GameView (ohne
 // Speichern!) und Knöpfen für typische Spielstände, Feiern und Klänge.
 // Deep-Links für die visuelle QA: ?studio=spiel&demo=fast|bingo|voll&party=bingo|full&players=4&shared=1
+// Foto-Prüfung mit vorgegebenem Ergebnis (ohne Kamera/Modell):
+// ?studio=spiel&photo=laedt|prueft|passt|unsicher|anderes|fehler|offline
 import { type ReactNode, useMemo, useState } from 'react'
 import { OBJEKTE } from '../../data/objects'
-import type { Habitat, SpielKontext } from '../../data/types'
+import type { Habitat, Kategorie, SpielKontext } from '../../data/types'
+import { type ClassifyResult, matchesObject } from '../../lib/classifier'
+import { openMojiSrc } from '../../lib/emoji'
 import type { GameState } from '../../lib/game-state'
 import { createGame } from '../../lib/generator'
 import { HABITAT_LABEL } from '../../lib/labels'
@@ -12,6 +16,7 @@ import { playSfx, type SfxName } from '../../lib/sfx'
 import { wingoLine } from '../../lib/wingo-lines'
 import { Celebration, type CelebrationKind } from '../fx'
 import { GameView } from '../game/GameView'
+import { type PhotoVerifyState, PhotoVerifyView } from '../game/PhotoVerify'
 import { GameButton, Panel } from '../ui'
 
 type Demo = 'leer' | 'fast' | 'bingo' | 'voll'
@@ -37,6 +42,43 @@ const SOUNDS: SfxName[] = ['tap', 'open', 'close', 'found', 'unfound', 'almost',
 const PLAYER_OPTIONS = [1, 2, 4, 10]
 const HABITATS: Habitat[] = ['mischwald', 'laubwald', 'nadelwald', 'gewaesser']
 
+// ── Foto-Prüfung: vorgegebene Ergebnisse (echte ImageNet-Klassennamen) ──
+type PhotoDemo = 'laedt' | 'prueft' | 'passt' | 'unsicher' | 'anderes' | 'fehler' | 'offline'
+
+const PHOTO_DEMOS: Array<{ id: PhotoDemo; label: string }> = [
+  { id: 'laedt', label: 'Lupe lädt' },
+  { id: 'prueft', label: 'prüft' },
+  { id: 'passt', label: 'passt' },
+  { id: 'unsicher', label: 'unsicher' },
+  { id: 'anderes', label: 'eher anderes' },
+  { id: 'fehler', label: 'Fehler' },
+  { id: 'offline', label: 'offline' },
+]
+
+const res = (className: string, probability: number, kategorie: Kategorie | null): ClassifyResult => ({
+  className,
+  probability,
+  kategorie,
+  matchLabels: kategorie ? [kategorie] : [],
+})
+
+const PHOTO_RESULTS: Partial<Record<PhotoDemo, ClassifyResult[]>> = {
+  passt: [res('agaric', 0.62, 'Pilz'), res('mushroom', 0.21, 'Pilz'), res('bolete', 0.05, 'Pilz'), res('earthstar', 0.03, null)],
+  unsicher: [res('maze', 0.31, null), res('digital clock', 0.12, null), res('jigsaw puzzle', 0.06, null)],
+  anderes: [res('daisy', 0.44, 'Pflanze'), res('pot, flowerpot', 0.14, 'Pflanze'), res('agaric', 0.03, 'Pilz')],
+}
+
+/** Zustand wie in PhotoVerify – Treffer über die echte `matchesObject`-Regel. */
+function photoState(demo: PhotoDemo, kategorie: Kategorie): PhotoVerifyState {
+  const base: PhotoVerifyState = { phase: 'result', results: [], matched: false, confidence: 0, matchLabel: '', error: null }
+  if (demo === 'laedt') return { ...base, phase: 'loading-model' }
+  if (demo === 'prueft') return { ...base, phase: 'classifying' }
+  if (demo === 'fehler' || demo === 'offline') return { ...base, error: 'Failed to fetch' }
+  const results = PHOTO_RESULTS[demo] ?? []
+  const m = matchesObject(results, kategorie)
+  return { ...base, results, matched: m.matched, confidence: m.confidence, matchLabel: m.label }
+}
+
 function readParam(name: string): string | null {
   try {
     return new URLSearchParams(window.location.search).get(name)
@@ -48,6 +90,11 @@ function readParam(name: string): string | null {
 function initialDemo(): Demo {
   const d = readParam('demo')
   return d === 'fast' || d === 'bingo' || d === 'voll' ? d : 'leer'
+}
+
+function initialPhoto(): PhotoDemo | null {
+  const p = readParam('photo')
+  return PHOTO_DEMOS.some((d) => d.id === p) ? (p as PhotoDemo) : null
 }
 
 function initialParty(): CelebrationKind | null {
@@ -66,6 +113,8 @@ export function GameStudio({ scene }: { scene: SceneInput }) {
   const [habitat, setHabitat] = useState<Habitat>('mischwald')
   const [party, setParty] = useState<CelebrationKind | null>(initialParty)
   const [note, setNote] = useState<string | null>(null)
+  const [photo, setPhoto] = useState<PhotoDemo | null>(initialPhoto)
+  const photoTarget = useMemo(() => OBJEKTE.find((o) => o.id === 'fliegenpilz') ?? OBJEKTE[0], [])
 
   const ctx: SpielKontext = useMemo(
     () => ({ season: scene.season, weather: scene.weather, time: scene.time, habitat }),
@@ -144,6 +193,14 @@ export function GameStudio({ scene }: { scene: SceneInput }) {
           </GameButton>
         </Row>
 
+        <Row label="Foto-Prüfung (Fliegenpilz)">
+          {PHOTO_DEMOS.map((d) => (
+            <Chip key={d.id} on={photo === d.id} onClick={() => setPhoto(d.id)}>
+              {d.label}
+            </Chip>
+          ))}
+        </Row>
+
         <Row label="Spieler">
           {PLAYER_OPTIONS.map((n) => (
             <Chip
@@ -188,6 +245,29 @@ export function GameStudio({ scene }: { scene: SceneInput }) {
         onPrint={(withInfo) => studioOnly(withInfo ? 'Info-Seite' : 'Drucken')()}
         onInvite={studioOnly('Einladen')}
       />
+
+      {photo && (
+        <PhotoVerifyView
+          key={photo}
+          photoUrl={openMojiSrc(photo === 'anderes' ? '🌼' : '🍄') ?? ''}
+          target={photoTarget}
+          state={photoState(photo, photoTarget.kategorie)}
+          offline={photo === 'offline'}
+          lineVariant={0}
+          season={scene.season}
+          weather={scene.weather}
+          night={scene.time === 'nacht' || scene.time === 'daemmerung'}
+          onConfirm={() => {
+            setPhoto(null)
+            studioOnly('Abhaken')()
+          }}
+          onRetry={() => {
+            setPhoto(null)
+            studioOnly('Neues Foto')()
+          }}
+          onCancel={() => setPhoto(null)}
+        />
+      )}
 
       {party && (
         <Celebration

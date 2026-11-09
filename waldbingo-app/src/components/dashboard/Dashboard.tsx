@@ -17,7 +17,7 @@ import type { SceneInput } from '../../lib/scene'
 import { playSfx } from '../../lib/sfx'
 import { getRegionalSpecies, prefetchMedia } from '../../lib/species'
 import { type CurrentWeather, fetchCurrentWeather } from '../../lib/weather'
-import { wingoLine } from '../../lib/wingo-lines'
+import { setupSituation, wingoLine } from '../../lib/wingo-lines'
 import { Friend } from '../characters/Friends'
 import { WingoSays } from '../characters/WingoSays'
 import { BackIcon, CloudOffIcon, FriendsIcon, SproutIcon } from '../home/ShellIcons'
@@ -75,6 +75,13 @@ export function Dashboard({ online, onStart, onBack, onJoinClick, onSceneChange,
   const [status, setStatus] = useState<string | null>(null)
   // Begrüßungs-Variante einmal pro Besuch auswürfeln.
   const [lineVariant] = useState(() => Math.floor(Math.random() * 1000))
+  // Wingos Zeile erst zeigen, wenn gespeicherter Ort/Wetter gelesen sind –
+  // sonst blitzt kurz „Wo seid ihr?“ auf, obwohl der Ort schon bekannt ist.
+  const [lineReady, setLineReady] = useState(false)
+  useEffect(() => {
+    const t = window.setTimeout(() => setLineReady(true), 400) // Sicherung, falls IndexedDB hängt
+    return () => window.clearTimeout(t)
+  }, [])
 
   const geo = useGeolocation()
   const ctxAbort = useRef<AbortController | null>(null)
@@ -117,6 +124,7 @@ export function Dashboard({ online, onStart, onBack, onJoinClick, onSceneChange,
         }
       })
       .catch(() => undefined)
+      .finally(() => setLineReady(true))
     return () => ctxAbort.current?.abort()
   }, [])
 
@@ -262,6 +270,21 @@ export function Dashboard({ online, onStart, onBack, onJoinClick, onSceneChange,
   const isGebirge = elevation != null && elevation >= GEBIRGE_ELEVATION_M
   const night = time === 'nacht' || time === 'daemmerung'
 
+  // Wingos Zeile folgt dem nächsten sinnvollen Schritt (Ort → Wetter → los).
+  // Sie hängt nur vom Schritt ab; erst im Bereit-Schritt kommentiert Wingo
+  // Wetter/Jahreszeit/Tageszeit – nachgeladene Werte lassen sie nicht flackern.
+  const setupStep = setupSituation({
+    online,
+    hasPlace: lat != null && lng != null,
+    busy: geo.loading || loadingCtx,
+    weatherKnown: weather != null,
+  })
+  const setupLine = wingoLine(
+    setupStep,
+    setupStep === 'setupReady' ? { season, weather, time, offline: !online } : { offline: !online },
+    lineVariant,
+  )
+
   return (
     <section className="wb-plan pb-2">
       {/* Kopf: Zurück + Titel direkt auf der Szene */}
@@ -275,8 +298,8 @@ export function Dashboard({ online, onStart, onBack, onJoinClick, onSceneChange,
       </div>
 
       {/* Wingo als Begleiter */}
-      <WingoSays mood="happy" size={92} season={season} weather={weather} night={night} className="mb-1 max-w-[520px]">
-        {wingoLine('setup', { season, weather, time }, lineVariant)}
+      <WingoSays mood="happy" size={92} season={season} weather={weather} night={night} className={`mb-1 max-w-[520px] ${lineReady ? '' : 'invisible'}`}>
+        {setupLine}
       </WingoSays>
 
       {!online && (

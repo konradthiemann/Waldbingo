@@ -7,7 +7,7 @@
 // Reihenfolge der Kontexte: Nacht/Dämmerung → besonderes Wetter → Morgen/Abend
 // → Jahreszeit → ruhiges Wetter (klar/bewölkt) → allgemeine Zeilen.
 import type { WingoMood } from '../components/characters/Wingo'
-import type { Jahreszeit, Tageszeit, Wetter } from '../data/types'
+import type { Jahreszeit, Kategorie, Tageszeit, Wetter } from '../data/types'
 
 export type WingoSituation =
   | 'welcome' // Startbildschirm
@@ -25,6 +25,19 @@ export type WingoSituation =
   | 'choose' // Foto machen oder einfach abhaken?
   | 'join' // Spiel beitreten
   | 'error' // Fehlerseite
+  // Expedition planen – Wingo spricht über den nächsten sinnvollen Schritt (siehe setupSituation)
+  | 'setupWhere' // noch kein Ort gewählt
+  | 'setupLookup' // Standort/Wetter wird gesucht
+  | 'setupWeather' // Ort klar, Wetter unbekannt
+  | 'setupReady' // alles da – los geht’s
+  // Foto-Prüfung (PhotoVerify) – siehe photoSituation
+  | 'photoLoading' // Erkennungs-Modell lädt
+  | 'photoChecking' // Foto wird analysiert
+  | 'photoMatch' // Kategorie passt
+  | 'photoUnsure' // nichts Passendes erkannt
+  | 'photoOther' // eher eine andere Wald-Kategorie erkannt (mit `guess`)
+  | 'photoError' // Erkennung fehlgeschlagen
+  | 'photoOffline' // fehlgeschlagen, weil kein Netz
 
 export interface LineContext {
   season?: Jahreszeit
@@ -36,6 +49,12 @@ export interface LineContext {
   count?: number
   /** Name der Spielerin/des Spielers (bei switch), z. B. „Flitz“. */
   player?: string
+  /** Kategorie des gesuchten Feldes (Foto-Prüfung), z. B. „Pilz“. */
+  kind?: Kategorie
+  /** Was die Foto-Erkennung stattdessen eher sieht (bei photoOther). */
+  guess?: Kategorie
+  /** Kein Netz (Expedition planen). */
+  offline?: boolean
 }
 
 /** Alle Situationen (für Tests, Studio, Vorschau). */
@@ -55,6 +74,17 @@ export const WINGO_SITUATIONS: WingoSituation[] = [
   'choose',
   'join',
   'error',
+  'setupWhere',
+  'setupLookup',
+  'setupWeather',
+  'setupReady',
+  'photoLoading',
+  'photoChecking',
+  'photoMatch',
+  'photoUnsure',
+  'photoOther',
+  'photoError',
+  'photoOffline',
 ]
 
 /** Maximale Länge einer Zeile (Sprechblase bleibt kompakt, auch auf dem Handy). */
@@ -106,6 +136,17 @@ const MOOD: Record<WingoSituation, WingoMood> = {
   choose: 'think',
   join: 'wave',
   error: 'sad',
+  setupWhere: 'happy',
+  setupLookup: 'happy',
+  setupWeather: 'happy',
+  setupReady: 'happy',
+  photoLoading: 'think',
+  photoChecking: 'think',
+  photoMatch: 'cheer',
+  photoUnsure: 'think',
+  photoOther: 'surprised',
+  photoError: 'sad',
+  photoOffline: 'think',
 }
 
 const FALLBACK: Record<WingoSituation, string> = {
@@ -124,6 +165,76 @@ const FALLBACK: Record<WingoSituation, string> = {
   choose: 'Hast du es entdeckt? Zeig es mir mit einem Foto – oder hak es einfach ab!',
   join: 'Schön, dass du mitspielst!',
   error: 'Hoppla, da ist etwas schiefgegangen.',
+  setupWhere: 'Wo seid ihr? Tipp auf die Karte oder auf „Mein Standort“!',
+  setupLookup: 'Moment, ich schaue, wo ihr seid …',
+  setupWeather: 'Wie ist das Wetter bei euch? Tipp es unten an!',
+  setupReady: 'Alles bereit? Dann tipp unten auf „Los geht’s!“',
+  photoLoading: 'Ich hole schnell meine Lupe … einen Moment!',
+  photoChecking: 'Ich schaue mir dein Foto ganz genau an …',
+  photoMatch: 'Super Foto! Das passt – tipp auf „Gefunden!“',
+  photoUnsure: 'Hmm, da bin ich nicht ganz sicher …',
+  photoOther: 'Oh, das sieht für mich nach etwas anderem aus.',
+  photoError: 'Hoppla, meine Lupe klemmt! Du kannst es trotzdem abhaken.',
+  photoOffline: 'Ohne Internet bleibt meine Lupe zu Hause. Hak es einfach selbst ab!',
+}
+
+// ── Schritt-Auswahl ────────────────────────────────────────────────────────
+
+/** Was „Expedition planen“ gerade weiß (nur Lesen, keine Logik). */
+export interface SetupState {
+  online: boolean
+  /** Ort gewählt (Karte, „Mein Standort“ oder gespeichert)? */
+  hasPlace: boolean
+  /** Standort oder Wetter/Region werden gerade gesucht? */
+  busy: boolean
+  /** Wetter bekannt (live, gespeichert oder von Hand gewählt)? */
+  weatherKnown: boolean
+}
+
+/**
+ * Nächster sinnvoller Schritt beim Planen → Situation für Wingos Zeile.
+ * Ohne Netz bringt der Ort nichts (Karte, Wetter und Arten brauchen Netz),
+ * deshalb geht es dann gleich um das Wetter bzw. ums Losgehen.
+ */
+export function setupSituation(s: SetupState): WingoSituation {
+  if (s.busy) return 'setupLookup'
+  if (s.online && !s.hasPlace) return 'setupWhere'
+  if (!s.weatherKnown) return 'setupWeather'
+  return 'setupReady'
+}
+
+/** Zustand der Foto-Prüfung (Spiegel von PhotoVerify, nur Lesen). */
+export interface PhotoState {
+  phase: 'loading-model' | 'classifying' | 'result'
+  /** Erkennung fehlgeschlagen (Modell nicht ladbar oder Analyse-Fehler). */
+  error: boolean
+  /** Browser meldet „offline“. */
+  offline: boolean
+  /** Kategorie des Fotos passt zum gesuchten Feld. */
+  matched: boolean
+  /** Andere Wald-Kategorie, die die Erkennung stattdessen sieht (oder null). */
+  guess?: Kategorie | null
+}
+
+/** Ergebnis der Foto-Prüfung → Situation für Wingos Zeile. */
+export function photoSituation(p: PhotoState): WingoSituation {
+  if (p.phase === 'loading-model') return 'photoLoading'
+  if (p.phase === 'classifying') return 'photoChecking'
+  if (p.error) return p.offline ? 'photoOffline' : 'photoError'
+  if (p.matched) return 'photoMatch'
+  return p.guess ? 'photoOther' : 'photoUnsure'
+}
+
+/** Kategorie als kindgerechtes Wort mit Artikel (Nominativ / nach „nach“). */
+const KIND: Record<Kategorie, { nom: string; dat: string }> = {
+  Tier: { nom: 'ein Tier', dat: 'einem Tier' },
+  Vogel: { nom: 'ein Vogel', dat: 'einem Vogel' },
+  Insekt: { nom: 'ein Insekt', dat: 'einem Insekt' },
+  Pflanze: { nom: 'eine Pflanze', dat: 'einer Pflanze' },
+  Baum: { nom: 'ein Baum', dat: 'einem Baum' },
+  Pilz: { nom: 'ein Pilz', dat: 'einem Pilz' },
+  Spur: { nom: 'eine Tierspur', dat: 'einer Tierspur' },
+  Landschaft: { nom: 'ein Stück Landschaft', dat: 'Landschaft' },
 }
 
 // ── Kontext-Bausteine ──────────────────────────────────────────────────────
@@ -499,4 +610,164 @@ const BUILD: Record<WingoSituation, (c: LineContext) => string[]> = {
     'Hmm, das hat nicht geklappt. Versuch es gleich nochmal.',
     'Da hat sich etwas im Gestrüpp verheddert.',
   ],
+
+  // ── Expedition planen: Wingo begleitet den nächsten Schritt ──────────────
+  // Zeilen ohne Wetter-Kontext, damit nachgeladene Werte die Zeile nicht ändern.
+  setupWhere: () => [
+    'Wo seid ihr? Tipp auf die Karte oder auf „Mein Standort“!',
+    'Zeig mir auf der Karte, in welchem Wald ihr seid!',
+    'Wo geht’s hin? Dann weiß ich, welche Tiere dort wohnen.',
+    'Erst mal: Wo seid ihr? Dann schnuppere ich nach dem Wetter.',
+  ],
+
+  setupLookup: (c) => [
+    ...(c.offline ? [] : ['Ich schnuppere mal, wie das Wetter bei euch ist …']),
+    'Moment, ich schaue, wo ihr seid …',
+    'Schnupper, schnupper … gleich weiß ich mehr über euren Wald!',
+    'Ich schaue auf meine Waldkarte … einen Moment!',
+  ],
+
+  setupWeather: (c) => [
+    ...(c.offline ? ['Kein Netz? Macht nichts! Wie ist das Wetter bei euch?'] : []),
+    'Wie ist das Wetter bei euch? Tipp es unten an!',
+    'Regnet es, schneit es oder ist es trocken? Sag es mir unten!',
+    'Ich kann das Wetter gerade nicht sehen. Wie ist es bei euch?',
+  ],
+
+  setupReady: (c) => [
+    ...(c.offline ? ['Kein Netz? Macht nichts – meine Waldkarte klappt auch so!'] : []),
+    ...withContext(
+      c,
+      {
+        dark: {
+          nacht: ['Eine Nachtwanderung! Nimm eine Taschenlampe mit – dann los!'],
+          daemmerung: ['In der Dämmerung kommen Rehe heraus. Alles bereit?'],
+        },
+        weather: {
+          regen: ['Regen? Super! Schnecken und Pilze warten schon. Los geht’s!'],
+          nach_regen: ['Nach dem Regen ist der Waldboden voller Leben. Alles bereit?'],
+          schnee: ['Schnee! Ich packe meinen Schal ein – und dann los!'],
+          frost: ['Frostig heute! Zieh dich warm an, dann geht’s los.'],
+          wind: ['Bei Wind rascheln die Blätter. Alles bereit? Los geht’s!'],
+          nebel: ['Nebel macht den Wald geheimnisvoll. Bleibt nah beieinander!'],
+        },
+        daytime: {
+          morgen: ['Am Morgen singen die Vögel am lautesten. Alles bereit?'],
+          abend: ['Am Abend wird der Wald ganz ruhig. Los geht’s!'],
+        },
+        season: {
+          fruehling: ['Im Frühling gibt’s Blüten und Vogelnester. Alles bereit?'],
+          sommer: ['Im Sommer summt und krabbelt es überall. Los geht’s!'],
+          herbst: ['Im Herbst gibt’s Pilze, Kastanien und buntes Laub. Alles bereit?'],
+          winter: ['Im Winter suchen wir Spuren und Zapfen. Alles bereit?'],
+        },
+        sunny: ['Sonnenschein! Da flattern bestimmt Schmetterlinge. Los geht’s!'],
+        cloudy: ['Ein paar Wolken? Perfektes Entdeckerwetter! Alles bereit?'],
+      },
+      [
+        'Alles bereit? Dann tipp unten auf „Los geht’s!“',
+        'Wie schwer soll es sein? Pilzi, Flitz und Fine helfen dir.',
+        'Wie viele Waldforscher kommen mit? Stell es unten ein!',
+        'Mein Rucksack ist gepackt. Los geht’s!',
+      ],
+    ),
+  ],
+
+  // ── Foto-Prüfung: Wingo kommentiert die Erkennung ──────────────────────
+  photoLoading: (c) =>
+    withContext(
+      c,
+      {
+        dark: {
+          nacht: ['Ich hole meine Lupe und halte die Laterne hoch …'],
+          daemmerung: ['Ich hole meine Lupe und halte die Laterne hoch …'],
+        },
+      },
+      [
+        'Ich hole schnell meine Lupe … einen Moment!',
+        'Moment, ich putze noch meine Lupe blitzblank …',
+        'Ich krame meine Lupe aus dem Rucksack …',
+      ],
+    ),
+
+  photoChecking: (c) => {
+    const t = c.thing?.trim()
+    return [
+      ...(t ? [`${t}? Ich schaue ganz genau hin …`] : []),
+      'Ich schaue mir dein Foto ganz genau an …',
+      'Hmm, lass mich mal schnuppern … äh, gucken!',
+      'Ich zähle Beinchen, Blätter und Farben …',
+    ]
+  },
+
+  photoMatch: (c) => {
+    const t = c.thing?.trim()
+    const k = c.kind ? KIND[c.kind] : null
+    // „Pilz“ als Pilz → nicht doppelt sagen („… nach einem Pilz aus – Pilz gefunden!“).
+    const same = !!t && !!k && k.nom.toLowerCase().endsWith(t.toLowerCase())
+    return [
+      ...(t && k && !same ? [`Juhu! Das sieht nach ${k.dat} aus – ${t} gefunden!`] : []),
+      ...(k ? [`Meine Lupe sagt: Das ist ${k.nom}! Super Foto!`] : []),
+      ...(t ? [`${t}? Ja, das passt! Tipp auf „Gefunden!“`] : []),
+      'Super Foto! Das passt – tipp auf „Gefunden!“',
+      'Treffer! Meine Lupe ist ganz begeistert.',
+      'Juhu, das erkenne ich! Du hast Adleraugen.',
+    ]
+  },
+
+  photoUnsure: (c) => {
+    const t = c.thing?.trim()
+    return withContext(
+      c,
+      {
+        dark: {
+          nacht: ['Im Dunkeln sehe ich nicht so gut. Mehr Licht – oder einfach abhaken!'],
+          daemmerung: ['Es ist schon so dämmrig. Mehr Licht – oder einfach abhaken!'],
+        },
+        weather: {
+          nebel: ['Im Nebel ist alles verschwommen. Geh noch ein Stück näher ran!'],
+          regen: ['Tropfen auf der Linse? Wisch sie ab und probier es nochmal!'],
+        },
+      },
+      [
+        ...(t ? [`${t}? Da bin ich nicht sicher. Hast du es gesehen? Dann hak es ab!`] : []),
+        'Geh ganz nah ran und mach noch ein Foto – dann sehe ich es besser!',
+        'Meine Lupe ist heute etwas müde. Du hast es gesehen? Dann hak es ab!',
+        'Hmm, da bin ich nicht ganz sicher …',
+      ],
+    )
+  },
+
+  photoOther: (c) => {
+    const t = c.thing?.trim()
+    const g = c.guess && c.guess !== c.kind ? KIND[c.guess] : null
+    return [
+      ...(g ? [`Oh! Für mich sieht das eher nach ${g.dat} aus. Was meinst du?`] : []),
+      ...(g && t ? [`Ich glaube, das ist eher ${g.nom}. ${t} gesehen? Dann hak es ab!`] : []),
+      ...(g ? [`Hmm, eher ${g.nom}? Geh näher ran und probier es nochmal!`] : []),
+      'Oh, das sieht für mich nach etwas anderem aus. Was meinst du?',
+      'Hmm, ich sehe da etwas anderes. Geh näher ran und probier es nochmal!',
+      'Ich bin mir nicht sicher. Du hast es gesehen? Dann hak es trotzdem ab!',
+    ]
+  },
+
+  photoError: (c) => {
+    const t = c.thing?.trim()
+    return [
+      ...(t ? [`Hoppla, meine Lupe klemmt! ${t} gesehen? Dann hak es selbst ab.`] : []),
+      'Hoppla, meine Lupe klemmt! Du kannst es trotzdem abhaken.',
+      'Oh, ich bin über eine Wurzel gestolpert! Hak es einfach selbst ab.',
+      'Das Prüfen hat nicht geklappt. Du hast es gesehen? Dann hak es ab!',
+    ]
+  },
+
+  photoOffline: (c) => {
+    const t = c.thing?.trim()
+    return [
+      'Ohne Internet bleibt meine Lupe zu Hause. Hak es einfach selbst ab!',
+      ...(t ? [`Kein Netz, keine Lupe. ${t} gesehen? Dann hak es selbst ab!`] : []),
+      'Kein Netz im Wald? Macht nichts – ich glaube deinen Adleraugen!',
+      'Hier gibt’s kein Internet. Du hast es gesehen? Dann hak es selbst ab!',
+    ]
+  },
 }

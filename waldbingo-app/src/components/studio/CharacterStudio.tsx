@@ -40,6 +40,17 @@ const SITUATION_LABEL: Record<WingoSituation, string> = {
   choose: 'Foto oder abhaken?',
   join: 'Beitreten',
   error: 'Fehler',
+  setupWhere: 'Planen · Ort fehlt',
+  setupLookup: 'Planen · sucht',
+  setupWeather: 'Planen · Wetter?',
+  setupReady: 'Planen · bereit',
+  photoLoading: 'Foto · Lupe lädt',
+  photoChecking: 'Foto · prüft',
+  photoMatch: 'Foto · passt',
+  photoUnsure: 'Foto · unsicher',
+  photoOther: 'Foto · eher anderes',
+  photoError: 'Foto · Fehler',
+  photoOffline: 'Foto · offline',
 }
 
 /**

@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest'
-import type { Jahreszeit, Tageszeit, Wetter } from '../data/types'
-import { type LineContext, MAX_LINE_LENGTH, WINGO_SITUATIONS, wingoLine, wingoLines, wingoMood } from './wingo-lines'
+import type { Jahreszeit, Kategorie, Tageszeit, Wetter } from '../data/types'
+import {
+  type LineContext,
+  MAX_LINE_LENGTH,
+  photoSituation,
+  setupSituation,
+  WINGO_SITUATIONS,
+  type WingoSituation,
+  wingoLine,
+  wingoLines,
+  wingoMood,
+} from './wingo-lines'
 
 const SEASONS: (Jahreszeit | undefined)[] = [undefined, 'fruehling', 'sommer', 'herbst', 'winter']
 const WEATHERS: (Wetter | null | undefined)[] = [
@@ -16,6 +26,17 @@ const WEATHERS: (Wetter | null | undefined)[] = [
   'nebel',
 ]
 const TIMES: (Tageszeit | undefined)[] = [undefined, 'morgen', 'tag', 'abend', 'daemmerung', 'nacht']
+const KINDS: Kategorie[] = ['Tier', 'Vogel', 'Insekt', 'Pflanze', 'Baum', 'Pilz', 'Spur', 'Landschaft']
+const PHOTO: WingoSituation[] = [
+  'photoLoading',
+  'photoChecking',
+  'photoMatch',
+  'photoUnsure',
+  'photoOther',
+  'photoError',
+  'photoOffline',
+]
+const SETUP: WingoSituation[] = ['setupWhere', 'setupLookup', 'setupWeather', 'setupReady']
 
 /** Alle Kontext-Kombinationen (inkl. „unbekannt“). */
 function allContexts(extra: Partial<LineContext> = {}): LineContext[] {
@@ -139,6 +160,99 @@ describe('wingo-lines', () => {
     expect(wingoLine('choose', {})).toMatch(/Foto/)
     expect(wingoLine('choose', { weather: 'regen' })).toMatch(/nass/)
     expect(wingoLine('choose', { time: 'nacht', weather: 'regen' })).toMatch(/Dunkeln/)
+  })
+
+  it('wählt beim Planen den nächsten sinnvollen Schritt', () => {
+    const base = { online: true, hasPlace: false, busy: false, weatherKnown: false }
+    expect(setupSituation(base)).toBe('setupWhere')
+    expect(setupSituation({ ...base, weatherKnown: true })).toBe('setupWhere')
+    expect(setupSituation({ ...base, busy: true })).toBe('setupLookup')
+    expect(setupSituation({ ...base, hasPlace: true, busy: true, weatherKnown: true })).toBe('setupLookup')
+    expect(setupSituation({ ...base, hasPlace: true })).toBe('setupWeather')
+    expect(setupSituation({ ...base, hasPlace: true, weatherKnown: true })).toBe('setupReady')
+    // Ohne Netz bringt der Ort nichts – dann geht es ums Wetter bzw. ums Losgehen.
+    expect(setupSituation({ ...base, online: false })).toBe('setupWeather')
+    expect(setupSituation({ ...base, online: false, weatherKnown: true })).toBe('setupReady')
+  })
+
+  it('fragt beim Planen ohne Ort nach dem Ort – unabhängig von Wetter & Co.', () => {
+    const plain = wingoLines('setupWhere', {})
+    for (const ctx of allContexts()) expect(wingoLines('setupWhere', ctx)).toEqual(plain)
+    for (const line of plain) expect(line).toMatch(/Wo |Karte|Wald/)
+    expect(wingoLine('setupWhere', {})).toMatch(/Karte/)
+  })
+
+  it('kommentiert erst im Bereit-Schritt Wetter und Tageszeit', () => {
+    expect(wingoLine('setupReady', { weather: 'regen' })).toMatch(/Regen/)
+    expect(wingoLine('setupReady', { time: 'nacht', weather: 'klar' })).toMatch(/Nacht/)
+    expect(wingoLine('setupReady', {})).toMatch(/Los geht’s/)
+    expect(wingoLines('setupReady', {}).some((l) => /Waldforscher/.test(l))).toBe(true)
+    expect(wingoLines('setupReady', {}).some((l) => /schwer/.test(l))).toBe(true)
+  })
+
+  it('erklärt beim Planen ohne Netz, dass es trotzdem geht', () => {
+    expect(wingoLine('setupReady', { offline: true, weather: 'regen' })).toMatch(/Kein Netz/)
+    expect(wingoLine('setupWeather', { offline: true })).toMatch(/Kein Netz/)
+    expect(wingoLine('setupWeather', {})).toMatch(/Wetter/)
+    expect(wingoLines('setupLookup', { offline: true }).join(' ')).not.toMatch(/Wetter/)
+  })
+
+  it('ordnet jeden Zustand der Foto-Prüfung einer Situation zu', () => {
+    const r = { phase: 'result' as const, error: false, offline: false, matched: false }
+    expect(photoSituation({ ...r, phase: 'loading-model' })).toBe('photoLoading')
+    expect(photoSituation({ ...r, phase: 'classifying' })).toBe('photoChecking')
+    expect(photoSituation({ ...r, matched: true })).toBe('photoMatch')
+    expect(photoSituation(r)).toBe('photoUnsure')
+    expect(photoSituation({ ...r, guess: null })).toBe('photoUnsure')
+    expect(photoSituation({ ...r, guess: 'Pflanze' })).toBe('photoOther')
+    expect(photoSituation({ ...r, error: true })).toBe('photoError')
+    expect(photoSituation({ ...r, error: true, offline: true })).toBe('photoOffline')
+    // Offline ohne Fehler (Modell schon im Speicher) → normales Ergebnis
+    expect(photoSituation({ ...r, offline: true, matched: true })).toBe('photoMatch')
+  })
+
+  it('kommentiert die Foto-Prüfung mit Fundname und Kategorie', () => {
+    expect(wingoLine('photoMatch', { thing: 'Fliegenpilz', kind: 'Pilz' })).toBe(
+      'Juhu! Das sieht nach einem Pilz aus – Fliegenpilz gefunden!',
+    )
+    expect(wingoLine('photoMatch', {})).toMatch(/Gefunden/)
+    // Fundname = Kategorie-Wort → kein „Pilz … Pilz“
+    expect(wingoLine('photoMatch', { thing: 'Pilz', kind: 'Pilz' })).toBe('Meine Lupe sagt: Das ist ein Pilz! Super Foto!')
+    expect(wingoLine('photoMatch', { thing: 'Tierspur', kind: 'Spur' })).not.toMatch(/Tierspur.*Tierspur/)
+    expect(wingoLine('photoChecking', { thing: 'Moos' })).toMatch(/^Moos\?/)
+    expect(wingoLine('photoUnsure', { thing: 'Reh' })).toMatch(/^Reh\?/)
+    expect(wingoLine('photoOther', { thing: 'Fliegenpilz', kind: 'Pilz', guess: 'Pflanze' })).toMatch(
+      /eher nach einer Pflanze/,
+    )
+    // Gleiche Kategorie als „eher“ wäre widersinnig → allgemeine Zeile
+    expect(wingoLine('photoOther', { kind: 'Pilz', guess: 'Pilz' })).not.toMatch(/Pilz/)
+    expect(wingoLine('photoError', { thing: 'Specht' })).toMatch(/Specht/)
+    expect(wingoLine('photoOffline', {})).toMatch(/Internet/)
+    expect(wingoLine('photoUnsure', { time: 'nacht' })).toMatch(/Dunkeln/)
+    expect(wingoLine('photoUnsure', { weather: 'nebel' })).toMatch(/Nebel/)
+  })
+
+  it('hält Foto-Zeilen für alle Kategorien und lange Namen ≤ 90 Zeichen', () => {
+    const things = [undefined, 'Moos', 'Leeres Schneckenhaus', 'Gewöhnlicher Wald-Sauerklee mit sehr langem Beinamen']
+    for (const situation of PHOTO) {
+      for (const thing of things) {
+        for (const kind of KINDS) {
+          for (const guess of [undefined, ...KINDS]) {
+            const pool = wingoLines(situation, { thing, kind, guess, time: 'nacht', weather: 'regen' })
+            expect(pool.length, situation).toBeGreaterThanOrEqual(3)
+            for (const line of pool) expect(line.length, `${situation}: „${line}“`).toBeLessThanOrEqual(MAX_LINE_LENGTH)
+          }
+        }
+      }
+    }
+  })
+
+  it('bietet für jede neue Situation eine passende Stimmung', () => {
+    expect(wingoMood('photoLoading')).toBe('think')
+    expect(wingoMood('photoMatch')).toBe('cheer')
+    expect(wingoMood('photoOther')).toBe('surprised')
+    expect(wingoMood('photoError')).toBe('sad')
+    for (const s of [...PHOTO, ...SETUP]) expect(WINGO_SITUATIONS).toContain(s)
   })
 
   it('empfiehlt passende Stimmungen', () => {
