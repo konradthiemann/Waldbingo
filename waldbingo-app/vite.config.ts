@@ -27,7 +27,14 @@ export default defineConfig({
     basicSsl(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon-192.png', 'icon-512.png'],
+      includeAssets: [
+        'icon-192.png',
+        'icon-512.png',
+        'icon-maskable-192.png',
+        'icon-maskable-512.png',
+        'apple-touch-icon.png',
+        'wingo-face.svg',
+      ],
       manifest: {
         name: 'Waldbingo',
         short_name: 'Waldbingo',
@@ -41,8 +48,12 @@ export default defineConfig({
         lang: 'de',
         categories: ['games', 'education', 'kids'],
         icons: [
-          { src: 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
-          { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+          // Wingo-Kachel (abgerundet, transparente Ecken) und eine randlose
+          // maskable-Variante, deren Figur im Sicherheitskreis (80 %) liegt.
+          { src: 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: 'icon-maskable-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+          { src: 'icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {
