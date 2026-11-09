@@ -63,16 +63,18 @@ type MobileNetModel = {
 }
 
 let modelPromise: Promise<MobileNetModel> | null = null
-let loadError: string | null = null
 
-/** Ob das Modell gerade geladen wird. */
+/** Ob das Modell gerade geladen wird (oder schon geladen ist). */
 export function isModelLoading(): boolean {
-  return modelPromise !== null && !loadError
+  return modelPromise !== null
 }
 
-/** Laedt das MobileNet-Modell (einmalig, danach gecacht). */
+/**
+ * Laedt das MobileNet-Modell (einmalig, danach im Speicher). Schlaegt das Laden
+ * fehl (z. B. offline), wird beim naechsten Aufruf erneut versucht – sonst bliebe
+ * die Foto-Pruefung bis zum Neuladen der Seite kaputt.
+ */
 export async function loadModel(): Promise<MobileNetModel> {
-  if (loadError) throw new Error(loadError)
   if (!modelPromise) {
     modelPromise = (async () => {
       try {
@@ -81,9 +83,8 @@ export async function loadModel(): Promise<MobileNetModel> {
         const model = await mobilenet.load({ version: 2, alpha: 1.0 })
         return model
       } catch (e) {
-        loadError = e instanceof Error ? e.message : 'Modell konnte nicht geladen werden'
         modelPromise = null
-        throw e
+        throw e instanceof Error ? e : new Error('Modell konnte nicht geladen werden')
       }
     })()
   }

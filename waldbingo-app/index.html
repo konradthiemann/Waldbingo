@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <meta name="theme-color" content="#1f5b38" />
     <meta name="description" content="Dynamisches Wald-Bingo fuer Familien – passt sich an Ort, Jahreszeit und Wetter an. Offline-faehig." />
-    <link rel="icon" type="image/png" href="./icon-192.png" />
-    <link rel="apple-touch-icon" href="./icon-512.png" />
+    <!-- PNG als Rückfall (z. B. Safari), danach Wingo als SVG-Icon für Browser, die es können. -->
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+    <link rel="icon" type="image/svg+xml" href="./wingo-face.svg" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
     <link rel="canonical" href="https://waldbingo.konradthiemann.de/" />
     <link rel="manifest" href="./manifest.webmanifest" />
 
@@ -14,7 +16,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Waldbingo" />
     <meta property="og:description" content="Dynamisches Wald-Bingo fuer Familien – passt sich an Ort, Jahreszeit und Wetter an. Offline-faehig." />
-    <meta property="og:image" content="https://waldbingo.konradthiemann.de/icon-512.png" />
+    <meta property="og:image" content="https://waldbingo.konradthiemann.de/icon-maskable-512.png" />
     <meta property="og:url" content="https://waldbingo.konradthiemann.de/" />
     <meta property="og:locale" content="de_DE" />
 
@@ -22,9 +24,18 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Waldbingo" />
     <meta name="twitter:description" content="Dynamisches Wald-Bingo fuer Familien – passt sich an Ort, Jahreszeit und Wetter an. Offline-faehig." />
-    <meta name="twitter:image" content="https://waldbingo.konradthiemann.de/icon-512.png" />
+    <meta name="twitter:image" content="https://waldbingo.konradthiemann.de/icon-maskable-512.png" />
 
     <title>Waldbingo</title>
+    <!-- Himmelsfarbe als Platzhalter, bis Szene & Styles geladen sind (kein weißer Blitz). -->
+    <style>
+      @media screen {
+        html,
+        body {
+          background: #8fc9ef;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

@@ -2,7 +2,8 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useRef } from 'react'
 import { WB_UI } from '../../icons/pictograms'
-import { Glyph } from '../Svg'
+import { playSfx } from '../../lib/sfx'
+import { PinIcon } from '../home/ShellIcons'
 
 interface Props {
   lat: number | null
@@ -17,7 +18,7 @@ interface Props {
 
 const pinIcon = L.divIcon({
   className: 'wb-pin',
-  html: `<div style="width:30px;height:38px;color:#1f5b38;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))">${WB_UI('pin', 'ui-ic')}</div>`,
+  html: `<div style="width:30px;height:38px;color:#e85d75;filter:drop-shadow(0 2px 2px rgba(15,38,23,.4))">${WB_UI('pin', 'ui-ic')}</div>`,
   iconSize: [30, 38],
   iconAnchor: [15, 36],
 })
@@ -67,7 +68,8 @@ export function MapTile({ lat, lng, online, busy, radiusKm, onPick, onLocate }: 
         circleRef.current = L.circle([lat, lng], {
           radius: meters,
           color: '#2f7d4f',
-          weight: 2,
+          weight: 2.5,
+          dashArray: '6 6',
           fillColor: '#3f9d63',
           fillOpacity: 0.12,
         }).addTo(map)
@@ -86,12 +88,12 @@ export function MapTile({ lat, lng, online, busy, radiusKm, onPick, onLocate }: 
   }, [lat, lng, radiusKm])
 
   return (
-    <div className="relative isolate h-[220px] w-full overflow-hidden rounded-lg border border-line bg-line-2 sm:h-[260px]">
+    <div className="relative isolate h-[210px] w-full overflow-hidden rounded-[22px] border-2 border-cream-line bg-cream-2 shadow-[inset_0_2px_6px_rgba(110,68,38,.12)] sm:h-[250px]">
       <div ref={elRef} className="h-full w-full" />
 
       {!online && (
-        <div className="pointer-events-none absolute inset-0 z-[500] flex items-end justify-center bg-white/45 p-2">
-          <span className="rounded-full bg-forest-900/85 px-3 py-1 text-[12px] font-semibold text-white">
+        <div className="pointer-events-none absolute inset-0 z-[500] flex items-start justify-center bg-cream/60 p-2.5 pl-14">
+          <span className="rounded-[14px] bg-forest-900/85 px-3 py-1.5 text-center font-display text-[12.5px] font-medium leading-snug text-white">
             Karte nur online – Standort &amp; Spiel funktionieren weiter
           </span>
         </div>
@@ -99,11 +101,14 @@ export function MapTile({ lat, lng, online, busy, radiusKm, onPick, onLocate }: 
 
       <button
         type="button"
-        onClick={onLocate}
+        onClick={() => {
+          playSfx('tap')
+          onLocate()
+        }}
         disabled={busy}
-        className="focus-ring absolute bottom-2.5 right-2.5 z-[600] inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[13px] font-bold text-forest-700 shadow-wb2 disabled:opacity-60"
+        className="focus-ring absolute bottom-3 right-3 z-[600] inline-flex h-11 items-center gap-2 rounded-full border-2 border-cream-line bg-cream px-4 font-display text-[14.5px] font-semibold text-forest-800 shadow-[0_3px_0_#d9c39d,0_6px_14px_rgba(15,38,23,.22)] transition active:translate-y-[2px] disabled:opacity-70"
       >
-        <Glyph name="pin" className="block h-4 w-4 text-forest-600" />
+        <PinIcon size={18} className={`text-berry ${busy ? 'animate-pulse' : ''}`} />
         {busy ? 'Suche…' : 'Mein Standort'}
       </button>
     </div>

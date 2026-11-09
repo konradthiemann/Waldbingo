@@ -16,11 +16,17 @@ body {
   color: #1d2a22;
   line-height: 1.5;
   min-height: 100vh;
+  font-family: 'Nunito Variable', Nunito, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   -webkit-tap-highlight-color: transparent;
-  background:
-    radial-gradient(120% 80% at 100% 0%, #f4f8f1 0%, rgba(244, 248, 241, 0) 55%),
-    radial-gradient(120% 80% at 0% 100%, #e3efe2 0%, rgba(227, 239, 226, 0) 55%),
-    #eaf1e8;
+  -webkit-font-smoothing: antialiased;
+  /* Fallback, bis die Szene (ForestScene) gerendert ist. */
+  background: linear-gradient(180deg, var(--sc-sky-top, #5fb4ea) 0%, var(--sc-sky-bottom, #cdeefc) 60%, var(--sc-ground, #6dbb5a) 100%);
+  background-attachment: fixed;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: 'Fredoka Variable', Fredoka, system-ui, sans-serif;
+  letter-spacing: 0.005em;
 }
 
 ::selection {
@@ -38,6 +44,19 @@ svg.ui-ic {
 .focus-ring:focus-visible {
   outline: none;
   box-shadow: var(--ring);
+}
+
+/* Milchglas direkt auf der Szene (HUD, Plaketten, Fußzeile). Tagsüber zart,
+   nachts wird es zu dichterem Creme-Papier statt grau auf Nachtblau.
+   --sc-daylight (0–1) setzt die App aus der Szene. In @layer components,
+   damit Hover-Utilities (hover:bg-white/75) weiter greifen. */
+@layer components {
+  .wb-glass {
+    background-color: rgb(255 250 241 / calc(0.55 + (1 - var(--sc-daylight, 1)) * 0.33));
+  }
+  .wb-glass-strong {
+    background-color: rgb(255 250 241 / calc(0.68 + (1 - var(--sc-daylight, 1)) * 0.24));
+  }
 }
 
 /* ── Animationen ───────────────────────────────────────── */
@@ -72,6 +91,9 @@ svg.ui-ic {
     opacity: 1;
   }
 }
+/* Hinweis: Die anim-*-Klassen setzen die Kurzform `animation:` und ersetzen damit
+   jede andere Animation am selben Element. Eigene Dauer-Animationen (Drift, Idle)
+   daher auf ein Kind- oder Eltern-Element legen. */
 .anim-pop {
   animation: wb-pop 0.28s ease;
 }
@@ -81,6 +103,25 @@ svg.ui-ic {
 .anim-rise {
   animation: wb-rise 0.25s ease;
 }
+
+/* Gemeinsame Spiel-Animationen (für alle Bereiche nutzbar) */
+@keyframes wb-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes wb-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-4deg); }
+  75% { transform: rotate(4deg); }
+}
+@keyframes wb-pop-in {
+  0% { transform: scale(0.6) translateY(8px); opacity: 0; }
+  70% { transform: scale(1.04); opacity: 1; }
+  100% { transform: none; opacity: 1; }
+}
+.anim-bob { animation: wb-bob 3.2s ease-in-out infinite; }
+.anim-wiggle { animation: wb-wiggle 0.5s ease-in-out; }
+.anim-pop-in { animation: wb-pop-in 0.45s cubic-bezier(.34,1.56,.64,1) both; }
 
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -97,8 +138,9 @@ svg.ui-ic {
   @page {
     margin: 10mm;
   }
+  html,
   body {
-    background: #fff;
+    background: #fff !important;
   }
   .app-screen,
   .no-print {

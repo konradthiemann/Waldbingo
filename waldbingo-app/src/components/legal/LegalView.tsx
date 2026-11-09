@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
-import { Glyph } from '../Svg'
+import { type ReactNode, useEffect } from 'react'
+import { BackIcon } from '../home/ShellIcons'
+import { IconButton } from '../ui'
 
 export type LegalPage = 'impressum' | 'datenschutz'
 
@@ -26,17 +27,16 @@ export function LegalView({ page, onClose, onNavigate }: Props) {
   }, [onClose])
 
   return (
-    <div className="anim-fade">
-      <div className="mb-4 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onClose}
-          className="focus-ring inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[13px] font-bold text-forest-700 shadow-wb1 hover:bg-line-2"
+    <div className="pb-2">
+      <div className="mb-3 flex flex-wrap items-center gap-2.5">
+        <IconButton label="Zurück" onClick={onClose}>
+          <BackIcon />
+        </IconButton>
+        <div
+          role="tablist"
+          aria-label="Rechtliches"
+          className="wb-glass ml-auto flex gap-1 rounded-full border border-white/70 p-1 shadow-wb2 backdrop-blur-md"
         >
-          <Glyph name="leaf" className="block h-4 w-4 text-forest-600" />
-          Zurück zum Spiel
-        </button>
-        <div className="ml-auto flex gap-1.5">
           <Tab active={page === 'impressum'} onClick={() => onNavigate('impressum')}>
             Impressum
           </Tab>
@@ -46,8 +46,9 @@ export function LegalView({ page, onClose, onNavigate }: Props) {
         </div>
       </div>
 
-      <article className="rounded-lg border border-line bg-white px-5 py-6 shadow-wb1 sm:px-8 sm:py-8">
-        {page === 'impressum' ? <Impressum /> : <Datenschutz />}
+      <article className="legal-copy rounded-2xl border-2 border-cream-line bg-cream px-5 py-6 text-ink shadow-panel sm:px-9 sm:py-9">
+        {/* Lesbare Zeilenlänge (≈ 75 Zeichen), auch wenn das Papier breit ist. */}
+        <div className="mx-auto max-w-[32rem]">{page === 'impressum' ? <Impressum /> : <Datenschutz />}</div>
       </article>
     </div>
   )
@@ -60,18 +61,19 @@ function Tab({
 }: {
   active: boolean
   onClick: () => void
-  children: React.ReactNode
+  children: ReactNode
 }) {
   return (
     <button
       type="button"
+      role="tab"
+      aria-selected={active}
       onClick={onClick}
-      aria-current={active ? 'page' : undefined}
       className={
-        'focus-ring rounded-full px-3 py-1.5 text-[12.5px] font-bold transition ' +
+        'focus-ring min-h-[44px] rounded-full px-4 font-display text-[14px] font-medium transition ' +
         (active
-          ? 'bg-forest-700 text-white shadow-wb1'
-          : 'bg-white text-forest-700 shadow-wb1 hover:bg-line-2')
+          ? 'bg-forest-600 text-white shadow-[0_2px_0_#1f5b38]'
+          : 'text-forest-900 hover:bg-white/60')
       }
     >
       {children}
@@ -80,15 +82,15 @@ function Tab({
 }
 
 // ── Typografie-Bausteine ─────────────────────────────────────────────────────
-function H2({ children }: { children: React.ReactNode }) {
-  return <h2 className="mb-2 mt-7 text-[18px] font-extrabold text-forest-900 first:mt-0">{children}</h2>
+function H2({ children }: { children: ReactNode }) {
+  return <h2 className="mb-2 mt-7 text-[18px] font-semibold text-forest-900 first:mt-0">{children}</h2>
 }
 
-function H3({ children }: { children: React.ReactNode }) {
-  return <h3 className="mb-1 mt-4 text-[14.5px] font-extrabold text-amber-600">{children}</h3>
+function H3({ children }: { children: ReactNode }) {
+  return <h3 className="mb-1 mt-4 text-[15px] font-semibold text-wood-dark">{children}</h3>
 }
 
-function P({ children }: { children: React.ReactNode }) {
+function P({ children }: { children: ReactNode }) {
   return <p className="my-2 text-[14.5px] leading-relaxed text-ink">{children}</p>
 }
 
@@ -114,7 +116,7 @@ function Address() {
 function Impressum() {
   return (
     <>
-      <h1 className="text-[24px] font-extrabold text-forest-900">Impressum</h1>
+      <h1 className="text-[26px] font-semibold text-forest-900">Impressum</h1>
       <Stand />
 
       <H2>Angaben gemäß § 5 DDG (Digitale-Dienste-Gesetz)</H2>
@@ -194,7 +196,7 @@ function Impressum() {
 function Datenschutz() {
   return (
     <>
-      <h1 className="text-[24px] font-extrabold text-forest-900">Datenschutzerklärung</h1>
+      <h1 className="text-[26px] font-semibold text-forest-900">Datenschutzerklärung</h1>
       <Stand />
 
       <H2>1. Verantwortlicher</H2>
