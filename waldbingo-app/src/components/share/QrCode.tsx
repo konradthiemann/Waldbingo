@@ -32,7 +32,7 @@ export function QrCode({ value, size = 220 }: Props) {
   if (error) {
     return (
       <div
-        className="grid place-items-center rounded-lg border border-dashed border-line bg-line-2 p-4 text-center text-[12.5px] text-muted"
+        className="grid place-items-center rounded-[12px] border-2 border-dashed border-cream-line bg-cream-2 p-4 text-center text-[12.5px] leading-snug text-muted"
         style={{ width: size, height: size }}
       >
         Dieses Spiel ist zu groß für einen QR-Code. Nutze den Code oder den Link.
@@ -45,7 +45,7 @@ export function QrCode({ value, size = 220 }: Props) {
       ref={canvasRef}
       width={size}
       height={size}
-      className="rounded-lg ring-1 ring-line"
+      className="block rounded-[10px]"
       aria-label="QR-Code zum Beitreten"
     />
   )

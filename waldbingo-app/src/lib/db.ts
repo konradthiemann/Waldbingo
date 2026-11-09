@@ -43,6 +43,8 @@ export interface Settings {
   lastLng?: number
   lastWeather?: CurrentWeather
   liveDisabled?: boolean
+  /** Ton an/aus (HUD-Schalter). Fehlt ⇒ an. */
+  soundOn?: boolean
 }
 
 class WaldbingoDB extends Dexie {

@@ -1,0 +1,323 @@
+/* Waldszene (ForestScene) – Ebenen-Stile, weiche Szenenwechsel, Idle-Loops.
+   Alle Bewegungen sind reine transform/opacity-Animationen auf eigenen Ebenen
+   (GPU-freundlich). prefers-reduced-motion schaltet global alles ab
+   (src/styles/index.css) – die Szene bleibt dann ein ruhiges Standbild. */
+
+/* ── Registrierte Szenen-Variablen ────────────────────────────────────────
+   Nur registrierte (typisierte) Custom Properties lassen sich per CSS-
+   Transition überblenden. Startwerte = Sommer · klar · Tag. */
+@property --sc-sky-top { syntax: '<color>'; inherits: true; initial-value: #5fb4ea; }
+@property --sc-sky-bottom { syntax: '<color>'; inherits: true; initial-value: #cdeefc; }
+@property --sc-glow { syntax: '<color>'; inherits: true; initial-value: #fff3c4; }
+@property --sc-cloud { syntax: '<color>'; inherits: true; initial-value: #ffffff; }
+@property --sc-hill-far { syntax: '<color>'; inherits: true; initial-value: #8fb7b5; }
+@property --sc-hill-near { syntax: '<color>'; inherits: true; initial-value: #6e9f86; }
+@property --sc-tree-far { syntax: '<color>'; inherits: true; initial-value: #6f9f8f; }
+@property --sc-tree-mid { syntax: '<color>'; inherits: true; initial-value: #3f7f62; }
+@property --sc-tree-near { syntax: '<color>'; inherits: true; initial-value: #285e41; }
+@property --sc-foliage { syntax: '<color>'; inherits: true; initial-value: #3f9d50; }
+@property --sc-foliage-accent { syntax: '<color>'; inherits: true; initial-value: #6cc46a; }
+@property --sc-trunk { syntax: '<color>'; inherits: true; initial-value: #7a4f2e; }
+@property --sc-ground { syntax: '<color>'; inherits: true; initial-value: #6dbb5a; }
+@property --sc-ground-shade { syntax: '<color>'; inherits: true; initial-value: #55914f; }
+@property --sc-flower { syntax: '<color>'; inherits: true; initial-value: #ff8fa3; }
+@property --sc-snow { syntax: '<color>'; inherits: true; initial-value: #f4f8ff; }
+@property --sc-haze { syntax: '<color>'; inherits: true; initial-value: rgba(0, 0, 0, 0); }
+@property --sc-wind { syntax: '<number>'; inherits: true; initial-value: 0.15; }
+
+/* Vorberechnete Mischfarben (scene-mixes.ts, statt color-mix() – läuft auch auf
+   älteren Geräten). Jede Mischfarbe, die sceneMixes() liefert, MUSS hier
+   registriert und unten in transition-property stehen (prüft scene-mixes.test.ts).
+   Startwerte = Sommer · klar · Tag. */
+@property --scm-trunk-dark { syntax: '<color>'; inherits: true; initial-value: #62422e; }
+@property --scm-birch-bark { syntax: '<color>'; inherits: true; initial-value: #d9d3d1; }
+@property --scm-cloud-shade { syntax: '<color>'; inherits: true; initial-value: #e0f0fa; }
+@property --scm-bank-low { syntax: '<color>'; inherits: true; initial-value: #c3e3f6; }
+@property --scm-bank-high { syntax: '<color>'; inherits: true; initial-value: #e3f2fb; }
+@property --scm-glow-sun { syntax: '<color>'; inherits: true; initial-value: rgba(255,243,196,0.85); }
+@property --scm-glow-diffuse { syntax: '<color>'; inherits: true; initial-value: rgba(255,243,196,0.7); }
+@property --scm-glow-moon { syntax: '<color>'; inherits: true; initial-value: rgba(255,243,196,0.55); }
+@property --scm-glow-soft { syntax: '<color>'; inherits: true; initial-value: rgba(255,243,196,0.26); }
+@property --scm-far-oak { syntax: '<color>'; inherits: true; initial-value: #57a370; }
+@property --scm-far-oak-bare { syntax: '<color>'; inherits: true; initial-value: #738064; }
+@property --scm-back-fir { syntax: '<color>'; inherits: true; initial-value: #5b9a7b; }
+@property --scm-back-oak { syntax: '<color>'; inherits: true; initial-value: #51a168; }
+@property --scm-back-oak-bare { syntax: '<color>'; inherits: true; initial-value: #75775a; }
+@property --scm-mid-leaf { syntax: '<color>'; inherits: true; initial-value: #53a868; }
+@property --scm-mid-base { syntax: '<color>'; inherits: true; initial-value: #629b6e; }
+@property --scm-meadow-front { syntax: '<color>'; inherits: true; initial-value: #69b458; }
+@property --scm-bush { syntax: '<color>'; inherits: true; initial-value: #2f7846; }
+@property --scm-bush-hi { syntax: '<color>'; inherits: true; initial-value: #699e7a; }
+@property --scm-bush-line { syntax: '<color>'; inherits: true; initial-value: #1e493b; }
+@property --scm-fern { syntax: '<color>'; inherits: true; initial-value: #35864a; }
+@property --scm-rock { syntax: '<color>'; inherits: true; initial-value: #76aa89; }
+@property --scm-rock-line { syntax: '<color>'; inherits: true; initial-value: #4c6e65; }
+@property --scm-rock-moss { syntax: '<color>'; inherits: true; initial-value: #4e964f; }
+@property --scm-puddle { syntax: '<color>'; inherits: true; initial-value: #a4d7f3; }
+@property --scm-daisy { syntax: '<color>'; inherits: true; initial-value: #f5ebf4; }
+@property --scm-mush-cap { syntax: '<color>'; inherits: true; initial-value: #925e31; }
+@property --scm-mush-cap-line { syntax: '<color>'; inherits: true; initial-value: #563d31; }
+@property --scm-mush-stem { syntax: '<color>'; inherits: true; initial-value: #d4ccc9; }
+@property --scm-mush-stem-line { syntax: '<color>'; inherits: true; initial-value: #7a7a84; }
+@property --scm-grass-edge { syntax: '<color>'; inherits: true; initial-value: #529a50; }
+@property --scm-grass-edge-frost { syntax: '<color>'; inherits: true; initial-value: #97c39a; }
+@property --scm-grass-edge-dry { syntax: '<color>'; inherits: true; initial-value: #9da369; }
+@property --scm-grass-front { syntax: '<color>'; inherits: true; initial-value: #407e49; }
+@property --scm-grass-front-frost { syntax: '<color>'; inherits: true; initial-value: #85ad8f; }
+@property --scm-grass-front-dry { syntax: '<color>'; inherits: true; initial-value: #8b965c; }
+@property --scm-crown { syntax: '<color>'; inherits: true; initial-value: #3d984f; }
+@property --scm-crown-line { syntax: '<color>'; inherits: true; initial-value: #285e41; }
+@property --scm-trunk-line { syntax: '<color>'; inherits: true; initial-value: #49352f; }
+@property --scm-fir-line { syntax: '<color>'; inherits: true; initial-value: #1c433a; }
+
+.forest-scene {
+  /* Bezugsgröße für cqw/cqh – funktioniert fixiert UND eingebettet (contained). */
+  container-type: size;
+  /* Szenenwechsel: alle Farben blenden ≈ 1,2 s weich über. */
+  transition-property: --sc-sky-top, --sc-sky-bottom, --sc-glow, --sc-cloud, --sc-hill-far, --sc-hill-near,
+    --sc-tree-far, --sc-tree-mid, --sc-tree-near, --sc-foliage, --sc-foliage-accent, --sc-trunk, --sc-ground,
+    --sc-ground-shade, --sc-flower, --sc-snow, --sc-haze,
+    --scm-trunk-dark, --scm-birch-bark, --scm-cloud-shade, --scm-bank-low, --scm-bank-high, --scm-glow-sun,
+    --scm-glow-diffuse, --scm-glow-moon, --scm-glow-soft, --scm-far-oak, --scm-far-oak-bare, --scm-back-fir,
+    --scm-back-oak, --scm-back-oak-bare, --scm-mid-leaf, --scm-mid-base, --scm-meadow-front, --scm-bush,
+    --scm-bush-hi, --scm-bush-line, --scm-fern, --scm-rock, --scm-rock-line, --scm-rock-moss, --scm-puddle,
+    --scm-daisy, --scm-mush-cap, --scm-mush-cap-line, --scm-mush-stem, --scm-mush-stem-line, --scm-grass-edge,
+    --scm-grass-edge-frost, --scm-grass-edge-dry, --scm-grass-front, --scm-grass-front-frost,
+    --scm-grass-front-dry, --scm-crown, --scm-crown-line, --scm-trunk-line, --scm-fir-line;
+  transition-duration: 1.2s;
+  transition-timing-function: ease;
+  /* Ableitungen für Schattierung/Konturen (immer im dunkleren Eigenton, nie Schwarz). */
+  --scx-ink: #0d1530;
+  /* Größen relativ zur Szene. Rückfall in vw/vh für Browser ohne Container-
+     Einheiten (Safari < 16, Chrome < 105) – die Szene ist dort ohnehin vollflächig. */
+  --scx-disc: clamp(50px, min(15vw, 8.5vh), 96px);
+  --scx-cloud-w: clamp(120px, 30vw, 330px);
+  --scx-rainbow-w: min(135vw, 100vh);
+}
+@supports (width: 1cqw) {
+  .forest-scene {
+    --scx-disc: clamp(50px, min(15cqw, 8.5cqh), 96px);
+    --scx-cloud-w: clamp(120px, 30cqw, 330px);
+    --scx-rainbow-w: min(135cqw, 100cqh);
+  }
+}
+
+.forest-scene .sc-fade {
+  transition: opacity 1.2s ease;
+}
+.forest-scene .sc-move {
+  transition: left 1.6s cubic-bezier(0.22, 1, 0.36, 1), top 1.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 1.2s ease;
+}
+
+/* ── Himmel ─────────────────────────────────────────────────────────────── */
+.sc-sky {
+  background: linear-gradient(180deg, var(--sc-sky-top) 0%, var(--sc-sky-bottom) 64%, var(--sc-sky-bottom) 100%);
+}
+.sc-horizon {
+  /* --hx: morgens Richtung Osten (links), abends Richtung Westen (rechts). */
+  background: radial-gradient(120% 70% at var(--hx, 50%) 100%, var(--sc-glow) 0%, transparent 70%);
+}
+/* Schmaler, warmer Streifen über den Hügeln: Morgen-/Abendrot bleibt auch unter
+   einer Wolkendecke erkennbar (nur bei Morgen/Abend gerendert). */
+.sc-horizon-band {
+  top: 27%;
+  height: 16%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--scm-glow-soft) 45%,
+    var(--scm-glow-sun) 78%,
+    transparent 100%
+  );
+  -webkit-mask-image: radial-gradient(75% 100% at var(--hx, 50%) 70%, #000 30%, transparent 100%);
+  mask-image: radial-gradient(75% 100% at var(--hx, 50%) 70%, #000 30%, transparent 100%);
+}
+.sc-haze {
+  background: var(--sc-haze);
+}
+
+/* Sonne/Mond: Lage. Breitformat je Tageszeit (Inline --bx-wide/--by-wide aus
+   BODY_POS), Hochformat (< 0,8) immer in der freien Ecke rechts oben
+   (Inline --bx-tall/--by-tall aus BODY_POS_TALL) – dort kollidieren die Gestirne weder mit
+   Logo, Überschriften, Spieler-Tabs noch mit Wingo. */
+.sc-bodies {
+  --bx: var(--bx-wide);
+  --by: var(--by-wide);
+}
+.sc-cloud-row {
+  top: var(--ct);
+}
+@container (max-aspect-ratio: 4 / 5) {
+  .sc-bodies {
+    --bx: var(--bx-tall);
+    --by: var(--by-tall);
+    --scx-disc: clamp(46px, 13.5cqw, 84px);
+  }
+  .sc-cloud-row {
+    top: var(--ct-tall);
+  }
+}
+/* Ältere Browser ohne Container-Queries: Hochformat am Bildschirm ablesen. */
+@supports not (container-type: size) {
+  @media (max-aspect-ratio: 4 / 5) {
+    .sc-bodies {
+      --bx: var(--bx-tall);
+      --by: var(--by-tall);
+    }
+    .sc-cloud-row {
+      top: var(--ct-tall);
+    }
+  }
+}
+
+/* Sonne/Mond: weiches, langsames Atmen des Glühens. */
+@keyframes sc-glow {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.85; }
+  50% { transform: translate(-50%, -50%) scale(1.07); opacity: 1; }
+}
+.sc-glow {
+  transform: translate(-50%, -50%);
+  animation: sc-glow 7s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Sonnenstrahlen (Morgen/Tag): ganz langsames Pulsieren. */
+@keyframes sc-rays {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+.sc-rays {
+  animation: sc-rays 9s ease-in-out infinite;
+}
+
+/* Sterne funkeln in drei Gruppen mit versetztem Takt. */
+@keyframes sc-twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.sc-stars-0 { animation: sc-twinkle 4.2s ease-in-out infinite; }
+.sc-stars-1 { animation: sc-twinkle 5.6s ease-in-out -1.8s infinite; }
+.sc-stars-2 { animation: sc-twinkle 7.1s ease-in-out -3.1s infinite; }
+
+/* Wolken driften quer über den Himmel (Wrapper = volle Breite → % = Szenenbreite). */
+@keyframes sc-drift {
+  from { transform: translateX(-30%); }
+  to { transform: translateX(130%); }
+}
+.sc-cloud-row {
+  animation-name: sc-drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+/* Wolkendecke/Nebel: langsames Hin-und-her. */
+@keyframes sc-sway-x {
+  from { transform: translateX(-3%); }
+  to { transform: translateX(3%); }
+}
+.sc-bank {
+  animation: sc-sway-x 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.sc-fog-band {
+  animation: sc-sway-x 34s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.sc-fog-band.sc-slow {
+  animation-duration: 47s;
+  animation-direction: alternate-reverse;
+}
+
+/* ── Wind: Bäume und Gräser wiegen sich ─────────────────────────────────
+   Neigung (--lean) und Ausschlag (--amp) hängen von --sc-wind ab. */
+@keyframes sc-sway {
+  0%, 100% { transform: skewX(calc((var(--lean) + var(--amp)) * -1deg)); }
+  50% { transform: skewX(calc((var(--lean) - var(--amp)) * -1deg)); }
+}
+@keyframes sc-rock {
+  0%, 100% { transform: rotate(calc((var(--lean) + var(--amp)) * 1deg)); }
+  50% { transform: rotate(calc((var(--lean) - var(--amp)) * 1deg)); }
+}
+.sc-sway-mid {
+  --lean: calc(var(--sc-wind) * 1.1);
+  --amp: calc(0.18 + var(--sc-wind) * 0.9);
+  transform-origin: 50% 69%;
+  animation: sc-sway calc(9s - var(--sc-wind) * 4.5s) ease-in-out infinite;
+  will-change: transform;
+}
+.sc-sway-grass {
+  --lean: calc(var(--sc-wind) * 7);
+  --amp: calc(1.6 + var(--sc-wind) * 6);
+  transform-origin: 50% 79%;
+  animation: sc-sway calc(5.5s - var(--sc-wind) * 2.6s) ease-in-out -1.3s infinite;
+  will-change: transform;
+}
+.sc-sway-front {
+  --lean: calc(var(--sc-wind) * 6);
+  --amp: calc(1.4 + var(--sc-wind) * 5);
+  transform-origin: 50% 100%;
+  animation: sc-sway calc(6.5s - var(--sc-wind) * 3s) ease-in-out -2.2s infinite;
+  will-change: transform;
+}
+.sc-rock-left {
+  --lean: calc(var(--sc-wind) * 0.9);
+  --amp: calc(0.25 + var(--sc-wind) * 0.8);
+  transform-origin: 30% 100%;
+  animation: sc-rock calc(10s - var(--sc-wind) * 4s) ease-in-out infinite;
+  will-change: transform;
+}
+.sc-rock-right {
+  --lean: calc(var(--sc-wind) * 0.9);
+  --amp: calc(0.2 + var(--sc-wind) * 0.7);
+  transform-origin: 70% 100%;
+  animation: sc-rock calc(11s - var(--sc-wind) * 4s) ease-in-out -3s infinite;
+  will-change: transform;
+}
+
+/* calm (z. B. Modal offen): Idle-Loops anhalten – Standbild, Akku schonen. */
+.forest-scene.is-calm .sc-sway-mid,
+.forest-scene.is-calm .sc-sway-grass,
+.forest-scene.is-calm .sc-sway-front,
+.forest-scene.is-calm .sc-rock-left,
+.forest-scene.is-calm .sc-rock-right,
+.forest-scene.is-calm .sc-cloud-row,
+.forest-scene.is-calm .sc-bank,
+.forest-scene.is-calm .sc-fog-band {
+  animation-play-state: paused;
+}
+
+/* Rahmen-Bäume: Größe/Lage relativ zur Szene. Am Handy steht die Stammmitte
+   fast am Rand (nur die Innenhälfte ragt herein), am Desktop rücken sie ins Bild.
+   --fh = Höhe, Breite = 0,4 · Höhe, Stammmitte = halbe Breite. */
+.sc-frame {
+  /* Rückfall ohne Container-Einheiten: Bildschirmmaße (Szene ist vollflächig). */
+  --fh: min(84vh, 132vw);
+  position: absolute;
+  bottom: 0;
+  height: var(--fh);
+  aspect-ratio: 360 / 900;
+}
+.sc-frame-left {
+  left: calc(clamp(6px, 17vw - 60px, 190px) - var(--fh) * 0.2);
+}
+.sc-frame-right {
+  right: calc(clamp(4px, 15vw - 52px, 170px) - var(--fh) * 0.2);
+}
+@supports (height: 1cqh) {
+  .sc-frame {
+    --fh: min(84cqh, 132cqw);
+  }
+  .sc-frame-left {
+    left: calc(clamp(6px, 17cqw - 60px, 190px) - var(--fh) * 0.2);
+  }
+  .sc-frame-right {
+    right: calc(clamp(4px, 15cqw - 52px, 170px) - var(--fh) * 0.2);
+  }
+}
+
+@media print {
+  .forest-scene {
+    display: none !important;
+  }
+}

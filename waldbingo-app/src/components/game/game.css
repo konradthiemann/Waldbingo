@@ -1,0 +1,256 @@
+/* Spielbrett: Kacheln, Stempel, Bingo-Linien, Ranke, Wingo-Reaktionen.
+   Basis-Stil = ruhiger Endzustand (wichtig für „Bewegung reduzieren“). */
+
+/* ── Holzbrett ─────────────────────────────────────────── */
+.gb-board {
+  background:
+    repeating-linear-gradient(
+      93deg,
+      rgba(110, 68, 38, 0) 0px,
+      rgba(110, 68, 38, 0) 22px,
+      rgba(110, 68, 38, 0.07) 22px,
+      rgba(110, 68, 38, 0.07) 25px
+    ),
+    linear-gradient(180deg, #e2bb8c 0%, #c99560 40%, #b98352 100%);
+}
+/* Vertiefte Spielfläche im Rahmen */
+.gb-tray {
+  background: linear-gradient(180deg, rgba(110, 68, 38, 0.32), rgba(110, 68, 38, 0.18));
+  box-shadow:
+    inset 0 3px 6px rgba(70, 40, 20, 0.35),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* ── Kacheln ───────────────────────────────────────────── */
+.gb-tile {
+  transition:
+    transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease,
+    background-color 0.25s ease,
+    border-color 0.25s ease;
+}
+.gb-tile:active {
+  transform: scale(0.94);
+}
+@media (hover: hover) {
+  .gb-tile:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Kipp-/Stempel-Animation beim Finden */
+.gb-flip {
+  animation: gb-flip 0.55s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+@keyframes gb-flip {
+  0% {
+    transform: perspective(500px) rotateY(0deg) scale(1);
+  }
+  35% {
+    transform: perspective(500px) rotateY(70deg) scale(0.92);
+  }
+  70% {
+    transform: perspective(500px) rotateY(-8deg) scale(1.07);
+  }
+  100% {
+    transform: perspective(500px) rotateY(0deg) scale(1);
+  }
+}
+.gb-stamp-in {
+  animation: gb-stamp 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) 0.18s both;
+}
+@keyframes gb-stamp {
+  0% {
+    opacity: 0;
+    transform: scale(2.4) rotate(-40deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.88) rotate(-10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-14deg);
+  }
+}
+.gb-stamp {
+  transform: rotate(-14deg);
+}
+
+/* Fehlendes Feld einer 4/5-Linie: ruhiges Leuchten (langsamer Loop).
+   Der Ring ist statisch (ring-2), nur das Glühen eines Pseudo-Elements atmet
+   über opacity – kein box-shadow-Repaint pro Frame, Fokusring bleibt sichtbar. */
+.gb-hot::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  box-shadow: 0 0 16px 2px rgba(255, 214, 92, 0.9);
+  opacity: 0.45;
+  pointer-events: none;
+  animation: gb-hot-glow 3.2s ease-in-out infinite;
+}
+.gb-hot:focus-visible::after {
+  animation: none;
+  opacity: 0;
+}
+@keyframes gb-hot-glow {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Neue Bingo-Linie: zieht sich einmal golden über die Reihe (0,6 s),
+   leuchtet kurz und blendet aus. Basis-Stil = unsichtbar (ruhiger Endzustand). */
+.gb-line-flash {
+  opacity: 0;
+  animation: gb-line-flash 2s ease both;
+}
+@keyframes gb-line-flash {
+  0%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.gb-line-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: gb-line-draw 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes gb-line-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ── Volle Karte: goldenes Brett mit einmaligem Glanz ────────────── */
+.gb-board.gb-board-full {
+  background:
+    repeating-linear-gradient(
+      93deg,
+      rgba(150, 100, 20, 0) 0px,
+      rgba(150, 100, 20, 0) 22px,
+      rgba(150, 100, 20, 0.08) 22px,
+      rgba(150, 100, 20, 0.08) 25px
+    ),
+    linear-gradient(180deg, #ffe9a8 0%, #f3c44d 45%, #d9a21f 100%);
+}
+.gb-board-full::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(105deg, rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0.55) 50%, rgba(255, 255, 255, 0) 65%)
+    no-repeat;
+  background-size: 250% 100%;
+  background-position: 120% 0;
+  opacity: 0;
+  animation: gb-shine 1.6s ease-out 0.5s both;
+  z-index: 2;
+}
+@keyframes gb-shine {
+  0% {
+    opacity: 1;
+    background-position: 120% 0;
+  }
+  100% {
+    opacity: 1;
+    background-position: -40% 0;
+  }
+}
+.gb-plaque {
+  animation: gb-plaque-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+@keyframes gb-plaque-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+/* Flitz an der Spitze der Ranke: kleiner Hüpfer bei jedem Fund */
+.gb-flitz {
+  transition: left 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* ── Ranke (Fortschritt) ───────────────────────────────── */
+.gb-vine {
+  transition: stroke-dashoffset 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.gb-vine-leaf {
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+  animation: gb-leaf-grow 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes gb-leaf-grow {
+  from {
+    opacity: 0;
+    transform: scale(0.1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Wingo über dem Brett hüpft per Web Animations (GameView, HOP). */
+
+/* Spieler-Tabs: horizontales Wischen ohne sichtbaren Scrollbalken */
+.gb-scroll-x {
+  scrollbar-width: none;
+}
+.gb-scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+/* Kamera-Sucher: Ecken-Klammern */
+.gb-viewfinder::before,
+.gb-viewfinder::after {
+  content: '';
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border: 4px solid #8ed3a0;
+  pointer-events: none;
+}
+.gb-viewfinder::before {
+  left: 14px;
+  top: 14px;
+  border-right: 0;
+  border-bottom: 0;
+  border-top-left-radius: 14px;
+}
+.gb-viewfinder::after {
+  right: 14px;
+  bottom: 14px;
+  border-left: 0;
+  border-top: 0;
+  border-bottom-right-radius: 14px;
+}
+
+/* Unbestimmter Fortschritt (Foto-Erkennung) */
+.gb-indeterminate {
+  animation: gb-indeterminate 1.4s ease-in-out infinite;
+}
+@keyframes gb-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}

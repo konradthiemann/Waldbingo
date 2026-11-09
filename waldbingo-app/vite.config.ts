@@ -12,6 +12,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 //    es gibt daher keine runtimeCaching-Regel für tile.openstreetmap.org.
 export default defineConfig({
   base: './',
+  // Optional eigener Dep-Cache (z. B. mehrere Dev-Server parallel).
+  cacheDir: process.env.VITE_CACHE_DIR || 'node_modules/.vite',
   // Dev: /api an den lokalen Einladungs-Server (npm run server) weiterreichen.
   server: {
     proxy: {

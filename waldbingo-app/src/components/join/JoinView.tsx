@@ -1,10 +1,17 @@
 import { useEffect, useState } from 'react'
+import type { SpielKontext } from '../../data/types'
 import { fetchGameByCode } from '../../lib/api'
-import type { GameState } from '../../lib/game-state'
-import { gameFromShared } from '../../lib/game-state'
-import type { SharedGame } from '../../lib/share'
+import { gameFromShared, type GameState } from '../../lib/game-state'
 import { HABITAT_LABEL, SEASON_LABEL, TIME_LABEL, WEATHER_LABEL } from '../../lib/labels'
-import { Glyph } from '../Svg'
+import { playSfx } from '../../lib/sfx'
+import type { SharedGame } from '../../lib/share'
+import { wingoLine } from '../../lib/wingo-lines'
+import { PlayerAvatar, playerName } from '../characters/Friends'
+import { WingoSays } from '../characters/WingoSays'
+import { SeasonIcon, TimeIcon, WeatherIcon } from '../dashboard/SceneIcons'
+import { HabitatIcon } from '../game/icons'
+import { BackIcon, FriendsIcon } from '../home/ShellIcons'
+import { Badge, GameButton, IconButton, Panel } from '../ui'
 
 interface Props {
   /** Direkt mitgegebenes Spiel (z. B. aus einem geöffneten Link). */
@@ -13,9 +20,13 @@ interface Props {
   initialCode?: string
   onJoin: (game: GameState) => void
   onCancel: () => void
+  /** Meldet den Kontext des geladenen Spiels (Szene wechselt schon bei der Spielerwahl). */
+  onContext?: (ctx: SpielKontext) => void
 }
 
-export function JoinView({ initialShared, initialCode, onJoin, onCancel }: Props) {
+const CODE_LEN = 6
+
+export function JoinView({ initialShared, initialCode, onJoin, onCancel, onContext }: Props) {
   const [shared, setShared] = useState<SharedGame | null>(initialShared ?? null)
   const [code, setCode] = useState(initialCode ?? '')
   const [loading, setLoading] = useState(false)
@@ -27,10 +38,12 @@ export function JoinView({ initialShared, initialCode, onJoin, onCancel }: Props
       setError('Bitte gib einen Code ein.')
       return
     }
+    playSfx('tap')
     setLoading(true)
     setError(null)
     try {
       setShared(await fetchGameByCode(clean))
+      playSfx('whoosh')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Beitreten fehlgeschlagen.')
     } finally {
@@ -44,120 +57,156 @@ export function JoinView({ initialShared, initialCode, onJoin, onCancel }: Props
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Szene an das geladene Spiel anpassen.
+  useEffect(() => {
+    if (shared) onContext?.(shared.ctx)
+  }, [shared, onContext])
+
   function pick(playerIndex: number) {
     if (!shared) return
+    playSfx('tap')
     onJoin(gameFromShared(shared, playerIndex))
   }
 
+  // Einladungs-Codes haben genau 6 Zeichen – „Beitreten“ erst dann aktiv.
+  const codeComplete = code.trim().length >= CODE_LEN
+
+  const back = (
+    <IconButton label="Zurück" onClick={onCancel}>
+      <BackIcon />
+    </IconButton>
+  )
+
   // ── Spieler-Auswahl (Spiel ist geladen) ───────────────────────────────────
   if (shared) {
-    const pills: Array<{ glyph: string; label: string }> = [
-      { glyph: 'season', label: SEASON_LABEL[shared.ctx.season] },
-      { glyph: 'weather', label: shared.ctx.weather ? WEATHER_LABEL[shared.ctx.weather] : '–' },
-      { glyph: 'clock', label: TIME_LABEL[shared.ctx.time] },
-      { glyph: 'habitat', label: HABITAT_LABEL[shared.ctx.habitat] },
-    ]
+    const { ctx } = shared
+    const night = ctx.time === 'nacht' || ctx.time === 'daemmerung'
     return (
-      <section className="mb-[18px] rounded-xl border border-line bg-white p-5 shadow-wb2">
-        <div className="mb-2 flex items-center gap-2.5">
-          <Glyph name="users" className="block h-6 w-6 text-forest-600" />
-          <h2 className="text-[18px] font-extrabold text-forest-900">Welcher Spieler bist du?</h2>
+      <section className="pb-2">
+        <div className="mb-1 flex items-center gap-3">
+          {back}
+          <h2 className="scene-title text-[27px] font-semibold leading-tight">Spiel gefunden!</h2>
         </div>
-        <p className="mb-3 text-[13px] text-muted">
-          Du trittst einem Spiel bei. Sprich dich mit den anderen ab, wer welche Nummer nimmt –
-          jede Nummer bekommt eine andere Kartenreihenfolge.
-        </p>
+        <WingoSays mood="cheer" size={92} season={ctx.season} weather={ctx.weather} night={night}>
+          {wingoLine('join', { season: ctx.season, weather: ctx.weather, time: ctx.time })}
+        </WingoSays>
 
-        <div className="mb-4 flex flex-wrap gap-2">
-          {pills.map((p, i) => (
-            <span
-              key={i}
-              className="inline-flex items-center gap-[7px] rounded-full border border-[#cfe6d6] bg-forest-100 px-3 py-[7px] text-[13px] font-semibold text-forest-900"
-            >
-              <Glyph name={p.glyph} className="block h-[15px] w-[15px] text-forest-600" />
-              <b>{p.label}</b>
-            </span>
-          ))}
-        </div>
+        <Panel as="div" sign="Wer bist du?">
+          <div className="mb-3 flex flex-wrap justify-center gap-1.5">
+            <Badge icon={<SeasonIcon season={ctx.season} size={18} />}>{SEASON_LABEL[ctx.season]}</Badge>
+            <Badge icon={<WeatherIcon weather={ctx.weather} size={18} />}>
+              {ctx.weather ? WEATHER_LABEL[ctx.weather] : 'Wetter offen'}
+            </Badge>
+            <Badge icon={<TimeIcon time={ctx.time} size={18} />}>{TIME_LABEL[ctx.time]}</Badge>
+            <Badge icon={<HabitatIcon habitat={ctx.habitat} size={18} />}>{HABITAT_LABEL[ctx.habitat]}</Badge>
+          </div>
+          <p className="mb-4 text-center text-[13.5px] leading-snug text-muted">
+            Sprecht euch ab, wer welche Figur nimmt – jede Figur bekommt eine eigene Karte.
+          </p>
 
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-          {Array.from({ length: shared.players }, (_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => pick(i)}
-              className="focus-ring rounded-xl border-[1.5px] border-forest-300 bg-white px-3 py-4 text-[15px] font-bold text-forest-700 shadow-wb1 transition hover:bg-forest-100 active:translate-y-px"
-            >
-              Spieler {i + 1}
-              {i === 0 && <span className="ml-1 text-[11px] font-medium text-muted">(Host)</span>}
-            </button>
-          ))}
-        </div>
-
-        <button
-          type="button"
-          onClick={onCancel}
-          className="focus-ring mt-5 inline-flex items-center gap-2 text-[13.5px] font-semibold text-muted hover:text-forest-700"
-        >
-          <Glyph name="back" className="block h-4 w-4" />
-          Abbrechen
-        </button>
+          <div className="flex flex-wrap justify-center gap-3">
+            {Array.from({ length: shared.players }, (_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => pick(i)}
+                className="wb-stagger focus-ring flex w-[calc(50%-6px)] flex-col items-center rounded-[22px] sm:w-[calc(33.333%-8px)] border-2 border-cream-line bg-white px-2 pb-3 pt-3 shadow-[0_4px_0_#ead8b8,0_8px_14px_rgba(15,38,23,.08)] transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5 active:translate-y-px active:shadow-[0_1px_0_#ead8b8]"
+                style={{ ['--d' as string]: `${i * 60}ms` }}
+              >
+                <PlayerAvatar index={i} size={62} />
+                <span className="mt-2 font-display text-[17px] font-semibold leading-tight text-forest-900">
+                  {playerName(i)}
+                </span>
+                <span className="text-[12px] font-semibold text-muted">
+                  Spieler {i + 1}
+                  {i === 0 && ' · Host'}
+                </span>
+              </button>
+            ))}
+          </div>
+        </Panel>
       </section>
     )
   }
 
   // ── Code-Eingabe (kein Spiel geladen) ──────────────────────────────────────
   return (
-    <section className="mb-[18px] rounded-xl border border-line bg-white p-5 shadow-wb2">
-      <div className="mb-2 flex items-center gap-2.5">
-        <Glyph name="users" className="block h-6 w-6 text-forest-600" />
-        <h2 className="text-[18px] font-extrabold text-forest-900">Spiel beitreten</h2>
+    <section className="pb-2">
+      <div className="mb-1 flex items-center gap-3">
+        {back}
+        <h2 className="scene-title text-[27px] font-semibold leading-tight">Spiel beitreten</h2>
       </div>
-      <p className="mb-3 text-[13px] text-muted">
-        Gib den Einladungs-Code ein, den du bekommen hast. Oder öffne den geteilten Link / scanne
-        den QR-Code – dann geht es direkt weiter.
-      </p>
+      <WingoSays mood={loading ? 'think' : 'wave'} size={92}>
+        {wingoLine('join')}
+      </WingoSays>
 
-      <label className="mb-1.5 block text-[12px] font-semibold text-muted" htmlFor="join-code">
-        Einladungs-Code
-      </label>
-      <div className="flex gap-2">
+      <Panel as="div" sign="Einladungs-Code">
+        <p className="mb-3 text-center text-[13.5px] leading-snug text-muted">
+          Gib den Code ein, den du bekommen hast. Oder öffne den Link / scanne den QR-Code – dann geht es
+          direkt weiter.
+        </p>
+
+        <label className="sr-only" htmlFor="join-code">
+          Einladungs-Code
+        </label>
         <input
           id="join-code"
           type="text"
           inputMode="text"
           autoCapitalize="characters"
           autoComplete="off"
+          spellCheck={false}
+          maxLength={12}
           value={code}
-          onChange={(e) => setCode(e.target.value.toUpperCase())}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') void loadCode(code)
+          onChange={(e) => {
+            setCode(e.target.value.toUpperCase().replace(/\s+/g, ''))
+            setError(null)
           }}
-          placeholder="z. B. K7P2QF"
-          className="focus-ring flex-1 rounded-lg border-[1.5px] border-line px-3 py-3 text-center font-mono text-[22px] font-bold tracking-[0.15em] text-forest-900"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && codeComplete) void loadCode(code)
+          }}
+          placeholder="6 Zeichen, z. B. K7P2QF"
+          aria-invalid={!!error}
+          aria-describedby="join-code-hint"
+          className={`focus-ring h-[68px] w-full rounded-[20px] border-[3px] bg-white px-3 text-center font-display text-[32px] font-semibold uppercase tracking-[0.28em] text-forest-900 shadow-[inset_0_3px_0_rgba(110,68,38,.08)] placeholder:text-[16px] placeholder:font-medium placeholder:normal-case placeholder:tracking-normal placeholder:text-muted ${
+            error ? 'border-berry' : 'border-cream-line'
+          }`}
         />
-      </div>
+        <p id="join-code-hint" className="sr-only">
+          Der Code hat {CODE_LEN} Zeichen.
+        </p>
+        <div className="mt-2 flex justify-center gap-1.5" aria-hidden="true">
+          {Array.from({ length: CODE_LEN }, (_, i) => (
+            <span
+              key={i}
+              className={`h-1.5 w-5 rounded-full transition-colors ${i < code.length ? 'bg-forest-500' : 'bg-cream-3'}`}
+            />
+          ))}
+        </div>
 
-      {error && <p className="mt-2 text-[13px] text-red-600">{error}</p>}
+        {error && (
+          <p role="alert" className="mt-3 rounded-[14px] bg-berry-light/50 px-3 py-2 text-center text-[13.5px] font-semibold text-berry-dark">
+            {error}
+          </p>
+        )}
 
-      <button
-        type="button"
-        onClick={() => void loadCode(code)}
-        disabled={loading}
-        className="focus-ring mt-4 flex w-full items-center justify-center gap-2.5 rounded-lg bg-gradient-to-br from-forest-600 to-forest-700 px-6 py-3.5 text-[16px] font-bold text-white shadow-wb2 transition active:translate-y-px disabled:opacity-70"
-      >
-        <Glyph name="users" className="block h-5 w-5" />
-        {loading ? 'Wird geladen…' : 'Beitreten'}
-      </button>
-
-      <button
-        type="button"
-        onClick={onCancel}
-        className="focus-ring mt-3 inline-flex items-center gap-2 text-[13.5px] font-semibold text-muted hover:text-forest-700"
-      >
-        <Glyph name="back" className="block h-4 w-4" />
-        Zurück
-      </button>
+        <GameButton
+          variant="primary"
+          size="lg"
+          block
+          className="mt-4"
+          onClick={() => void loadCode(code)}
+          disabled={loading || !codeComplete}
+          icon={<FriendsIcon />}
+        >
+          {loading ? 'Wird geladen…' : 'Beitreten'}
+        </GameButton>
+        {!codeComplete && !loading && (
+          <p className="mt-2 text-center text-[13px] font-medium text-muted">
+            Noch {CODE_LEN - code.trim().length} Zeichen – dann kann es losgehen.
+          </p>
+        )}
+      </Panel>
     </section>
   )
 }
